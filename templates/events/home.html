@@ -145,6 +145,297 @@
         border-radius: 50%;
         margin: 0 6px;
     }
+
+    /* Enhanced Composition Card */
+    .composition-card {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        height: 350px;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        transform-origin: center bottom;
+    }
+    
+    .composition-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        z-index: 10;
+    }
+    
+    .composition-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+        opacity: 0.85;
+        transition: all 0.5s;
+    }
+    
+    .composition-card:hover .composition-bg {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
+    
+    .composition-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+        z-index: 2;
+    }
+    
+    .composition-type-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 3;
+        background-color: var(--primary-color, #0d6efd);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+    
+    .composition-type-badge.video {
+        background-color: #ff4d4d;
+    }
+    
+    .composition-content {
+        position: relative;
+        z-index: 3;
+        padding: 20px;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: end;
+    }
+    
+    .composition-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 1.3rem;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+    
+    .composition-controls {
+        width: 100%;
+        background-color: rgba(0,0,0,0.4);
+        border-radius: 10px;
+        padding: 15px;
+    }
+    
+    /* Custom Music Player */
+    .music-player-custom {
+        position: relative;
+        width: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 10px;
+    }
+    
+    .music-player-custom .play-pause-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--primary-color, #0d6efd);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+        border: none;
+        outline: none;
+    }
+    
+    .music-player-custom .play-pause-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    .music-player-custom .play-pause-btn i {
+        font-size: 1rem;
+    }
+    
+    .music-player-custom .controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    
+    .music-player-custom .progress-area {
+        height: 6px;
+        width: 100%;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .music-player-custom .progress-area .progress-bar {
+        height: 100%;
+        width: 0%;
+        position: relative;
+        border-radius: 50px;
+        background: linear-gradient(90deg, #1DB954, #56D47E);
+        transition: width 0.1s linear;
+    }
+    
+    .music-player-custom .progress-area .progress-bar::before {
+        content: "";
+        position: absolute;
+        height: 12px;
+        width: 12px;
+        border-radius: 50%;
+        top: 50%;
+        right: -5px;
+        transform: translateY(-50%);
+        background: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .music-player-custom .progress-area:hover .progress-bar::before {
+        opacity: 1;
+    }
+    
+    .music-player-custom .timer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 2px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.75rem;
+    }
+    
+    .music-player-custom .volume-container {
+        display: flex;
+        align-items: center;
+        margin-left: 15px;
+    }
+    
+    .music-player-custom .volume-icon {
+        color: white;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-right: 8px;
+    }
+    
+    .music-player-custom .volume-slider {
+        width: 60px;
+        height: 4px;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .music-player-custom .volume-slider .volume-progress {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.7);
+    }
+    
+    /* Hide the default audio player */
+    .music-player-custom audio {
+        display: none;
+    }
+    
+    /* Play button animation */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .play-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--primary-color, #0d6efd);
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        margin: 0 auto;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        cursor: pointer;
+        border: none;
+    }
+    
+    .play-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        animation: pulse 1.5s infinite;
+    }
+    
+    .play-btn.video {
+        background-color: #ff4d4d;
+    }
+    
+    .composition-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: block;
+        z-index: 3;
+        text-decoration: none;
+        color: white;
+    }
+    
+    .composition-wrapper:hover {
+        text-decoration: none;
+        color: white;
+    }
+    
+    .youtube-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        z-index: 5;
+        background-color: #ff0000;
+        color: white;
+        width: 32px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        font-size: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    
+    .youtube-badge:before {
+        content: '';
+        position: absolute;
+        left: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+        border-right: 8px solid #ff0000;
+    }
 </style>
 {% endblock %}
 
@@ -294,57 +585,56 @@
         <div class="row">
             {% for composition in latest_music %}
                 <div class="col-md-3 mb-4">
-                    <div class="card featured-card shadow h-100">
-                        <div class="img-wrapper">
-                            <a href="{% url 'composition_detail' composition.id %}">
-                            {% if composition.cover_image %}
-                                <img src="{{ composition.cover_image.url }}" class="card-img-top" alt="{{ composition.title }}">
-                            {% else %}
-                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                    <i class="fas fa-music fa-4x text-muted"></i>
-                                </div>
-                            {% endif %}
-                            </a>
+                    <div class="composition-card">
+                        {% if composition.cover_image %}
+                            <img src="{{ composition.cover_image.url }}" class="composition-bg" alt="{{ composition.title }}">
+                        {% else %}
+                            <img src="{% static 'images/music-default-bg.svg' %}" data-fallback-src="{% static 'images/music-default-bg.jpg' %}" class="composition-bg" alt="{{ composition.title }}">
+                        {% endif %}
+                        <div class="composition-overlay"></div>
+                        
+                        <div class="composition-type-badge">
+                            <i class="fas fa-music me-1"></i> Music
                         </div>
-                        <div class="card-body d-flex flex-column justify-content-between">
-                            <div>
-                                <h5 class="card-title"><a href="{% url 'composition_detail' composition.id %}" class="text-decoration-none">{{ composition.title }}</a></h5>
-                                <p class="card-text text-muted">
-                                    <i class="fas fa-user me-2"></i>
-                                    <a href="{% url 'artist_detail' composition.artist.id %}" class="text-decoration-none text-muted">{{ composition.artist.name }}</a>
-                                </p>
-                                {% if composition.description %}
-                                    <p class="card-text small">{{ composition.description|truncatewords:10 }}</p>
-                                {% endif %}
-                            </div>
+                        
+                        <div class="composition-content">
+                            <h5 class="composition-title text-white">
+                                {{ composition.title }}
+                            </h5>
+                            <p class="text-white-50 mb-2">
+                                <i class="fas fa-user me-2"></i>
+                                <a href="{% url 'artist_detail' composition.artist.id %}" class="text-white-50 text-decoration-none">{{ composition.artist.name }}</a>
+                            </p>
                             
-                            {% if composition.file %}
-                                <div class="music-player-custom mt-2" data-audio-src="{{ composition.file.url }}" data-composition-id="{{ composition.id }}">
-                                    <div class="controls">
-                                        <button type="button" class="play-pause-btn">
-                                            <i class="fas fa-play"></i>
-                                        </button>
-                                        <div class="volume-container">
-                                            <i class="fas fa-volume-up volume-icon"></i>
-                                            <div class="volume-slider">
-                                                <div class="volume-progress"></div>
+                            <div class="composition-controls">
+                                {% if composition.file %}
+                                    <div class="music-player-custom" data-audio-src="{{ composition.file.url }}" data-composition-id="{{ composition.id }}">
+                                        <div class="controls">
+                                            <button type="button" class="play-pause-btn">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <div class="volume-container">
+                                                <i class="fas fa-volume-up volume-icon"></i>
+                                                <div class="volume-slider">
+                                                    <div class="volume-progress"></div>
+                                                </div>
                                             </div>
                                         </div>
+                                        <div class="progress-area">
+                                            <div class="progress-bar"></div>
+                                        </div>
+                                        <div class="timer">
+                                            <span class="current">0:00</span>
+                                            <span class="duration">0:00</span>
+                                        </div>
+                                        <audio class="main-audio" src="{{ composition.file.url }}"></audio>
                                     </div>
-                                    <div class="progress-area">
-                                        <div class="progress-bar"></div>
-                                    </div>
-                                    <div class="timer">
-                                        <span class="current">0:00</span>
-                                        <span class="duration">0:00</span>
-                                    </div>
-                                    <audio class="main-audio" src="{{ composition.file.url }}"></audio>
-                                </div>
-                            {% else %}
-                                <a href="{% url 'composition_detail' composition.id %}" class="btn btn-outline-primary mt-3">
-                                    <i class="fas fa-play-circle me-2"></i>Listen
-                                </a>
-                            {% endif %}
+                                {% elif composition.link %}
+                                    <a href="{{ composition.link }}" target="_blank" class="btn btn-primary w-100">
+                                        <i class="fas fa-headphones me-2"></i> Listen
+                                    </a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -366,37 +656,34 @@
         <div class="row">
             {% for composition in latest_videos %}
                 <div class="col-md-3 mb-4">
-                    <div class="card featured-card shadow h-100">
-                        <div class="img-wrapper">
-                            <a href="{% url 'composition_detail' composition.id %}">
-                            {% if composition.cover_image %}
-                                <img src="{{ composition.cover_image.url }}" class="card-img-top" alt="{{ composition.title }}">
-                            {% else %}
-                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                    <i class="fas fa-film fa-4x text-muted"></i>
-                                </div>
-                            {% endif %}
-                            <div class="position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                                <div class="bg-dark bg-opacity-50 rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-play fa-2x text-white"></i>
-                                </div>
-                            </div>
-                            </a>
+                    <div class="composition-card" data-fancybox="video-gallery" href="{{ composition.link }}">
+                        {% if composition.cover_image %}
+                            <img src="{{ composition.cover_image.url }}" class="composition-bg" alt="{{ composition.title }}">
+                        {% else %}
+                            <img src="{% static 'images/video-default-bg.svg' %}" data-fallback-src="{% static 'images/video-default-bg.jpg' %}" class="composition-bg" alt="{{ composition.title }}">
+                        {% endif %}
+                        <a class="composition-overlay"></a>
+                        
+                        <div class="composition-type-badge video">
+                            <i class="fas fa-film me-1"></i> Video
                         </div>
-                        <div class="card-body d-flex flex-column justify-content-between">
-                            <div>
-                                <h5 class="card-title"><a href="{% url 'composition_detail' composition.id %}" class="text-decoration-none">{{ composition.title }}</a></h5>
-                                <p class="card-text text-muted">
+                        
+                        <div class="composition-wrapper">
+                            <div class="composition-content">
+                                <h5 class="composition-title text-white">
+                                    {{ composition.title }}
+                                </h5>
+                                <p class="text-white-50 mb-2">
                                     <i class="fas fa-user me-2"></i>
-                                    <a href="{% url 'artist_detail' composition.artist.id %}" class="text-decoration-none text-muted">{{ composition.artist.name }}</a>
+                                    <a href="{% url 'artist_detail' composition.artist.id %}" class="text-white-50 text-decoration-none">{{ composition.artist.name }}</a>
                                 </p>
-                                {% if composition.description %}
-                                    <p class="card-text">{{ composition.description|truncatewords:10 }}</p>
-                                {% endif %}
+                                
+                                <div class="composition-controls">
+                                    <span class="play-btn video">
+                                                <i class="fas fa-play"></i>
+                                            </span>
+                                </div>
                             </div>
-                            <a href="{% url 'composition_detail' composition.id %}" class="btn btn-outline-primary mt-3">
-                                <i class="fas fa-play-circle me-2"></i>Watch
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -432,4 +719,117 @@
 {% block extra_js %}
 <script src="{% static 'js/custom-music-player.js' %}"></script>
 <script src="{% static 'js/dynamic-backgrounds.js' %}"></script>
+<script>
+$(document).ready(function() {
+    // Initialize Fancybox for videos
+    try {
+        Fancybox.bind("[data-fancybox]", {
+            // Video options
+            youtube: {
+                controls: 1,
+                rel: 0,
+                autoplay: 1
+            },
+            // UI customization
+            Toolbar: {
+                display: [
+                    { id: "counter", position: "left" },
+                    "slideshow",
+                    "fullscreen",
+                    "close"
+                ]
+            },
+            // Animation
+            animated: true,
+            dragToClose: false,
+            // Appearance
+            showClass: "fancybox-zoomIn",
+            hideClass: "fancybox-zoomOut",
+            // Caption
+            caption: function (fancybox, slide) {
+                const composition = $(slide.triggerEl).closest('.composition-card').find('.composition-title').text().trim();
+                const artist = $(slide.triggerEl).closest('.composition-card').find('p a').text().trim();
+                return composition + " - " + artist;
+            }
+        });
+    } catch (e) {
+        console.error("Error initializing Fancybox:", e);
+    }
+
+    // Function to extract YouTube video ID from various URL formats
+    function getYoutubeId(url) {
+        if (!url) return null;
+        
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    // Handle video thumbnails for YouTube links
+    $('.composition-card').each(function() {
+        const $card = $(this);
+        const $link = $card.find('a[data-fancybox="video-gallery"]');
+        
+        if ($link.length) {
+            const url = $link.attr('href');
+            const youtubeId = getYoutubeId(url);
+            
+            if (youtubeId) {
+                // If there's no background image already set from server or it's a default image
+                const $bg = $card.find('.composition-bg');
+                if ($bg.attr('src') && $bg.attr('src').includes('default-bg')) {
+                    // Set YouTube thumbnail as background
+                    // Try high quality first
+                    const highQualityThumbnail = "https://img.youtube.com/vi/" + youtubeId + "/maxresdefault.jpg";
+                    const mediumQualityThumbnail = "https://img.youtube.com/vi/" + youtubeId + "/mqdefault.jpg";
+                    const standardThumbnail = "https://img.youtube.com/vi/" + youtubeId + "/0.jpg";
+                    
+                    // Create a new Image to test if high quality thumbnail exists
+                    const img = new Image();
+                    img.onload = function() {
+                        // If high quality thumbnail loads successfully and is not the default thumbnail (120x90)
+                        if (this.width > 120) {
+                            $bg.attr('src', highQualityThumbnail);
+                        } else {
+                            // Try medium quality
+                            $bg.attr('src', mediumQualityThumbnail);
+                        }
+                    };
+                    img.onerror = function() {
+                        // If high quality fails, use standard
+                        $bg.attr('src', standardThumbnail);
+                    };
+                    img.src = highQualityThumbnail;
+                }
+            }
+        }
+    });
+    
+    // Handle video play buttons
+    $('.play-btn.video').on('click', function(e) {
+        const videoSrc = $(this).data('src');
+        if (videoSrc) {
+            // Open video in a modal or player
+            $('<div>').html('<video controls autoplay style="max-width:100%;"><source src="' + videoSrc + '"></video>')
+            .css({
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'rgba(0,0,0,0.9)',
+                zIndex: 9999,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '20px'
+            })
+            .appendTo('body')
+            .click(function() {
+                $(this).remove();
+            });
+        }
+    });
+});
+</script>
 {% endblock %} 
