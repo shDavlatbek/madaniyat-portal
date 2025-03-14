@@ -1,0 +1,225 @@
+{% extends 'events/base.html' %}
+{% load static %}
+
+{% block title %}Events | Madaniyat Vazirligi{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-banner {
+        background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('{% static "images/event-banner.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        position: relative;
+    }
+    
+    .page-banner h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    /* Matching home page card styles */
+    .featured-card {
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: none;
+        margin-bottom: 30px;
+    }
+    
+    .featured-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .featured-card .card-img-top {
+        height: 250px;
+        object-fit: cover;
+        transition: all 0.5s ease;
+    }
+    
+    .featured-card:hover .card-img-top {
+        transform: scale(1.1);
+    }
+    
+    .featured-card .img-wrapper {
+        overflow: hidden;
+    }
+    
+    .featured-card .card-date {
+        background-color: #0d6efd;
+        color: white;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-weight: 600;
+    }
+    
+    /* Pagination */
+    .pagination .page-item .page-link {
+        border-radius: 50%;
+        margin: 0 5px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Banner -->
+<div class="page-banner mb-5">
+    <div class="container text-center">
+        <h1>Cultural Events</h1>
+        <p class="lead">Explore past performances, exhibitions, and cultural celebrations across Uzbekistan</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <!-- Search Area -->
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="mb-3 mb-md-0">
+                        <h5 class="mb-0">Past Events</h5>
+                    </div>
+                    <div>
+                        <form action="{% url 'event_list' %}" method="get" class="d-flex">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search events..." name="search" value="{{ search_query }}" aria-label="Search events">
+                                <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+                            </div>
+                            {% if search_query %}
+                                <a href="{% url 'event_list' %}" class="btn btn-outline-secondary ms-2">Clear</a>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if events %}
+        <div class="row">
+            {% for event in events %}
+                <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                    <div class="card featured-card shadow h-100">
+                        <div class="img-wrapper">
+                            <a href="{% url 'event_detail' event.id %}">
+                            {% if event.image %}
+                                <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title }}">
+                            {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center" 
+                                     style="height: 250px;">
+                                    <i class="fas fa-calendar-alt fa-4x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            </a>
+                        </div>
+                        <div class="card-date">{{ event.date|date:"M j" }}</div>
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <div>
+                                <h5 class="card-title"><a href="{% url 'event_detail' event.id %}" class="text-decoration-none">{{ event.title }}</a></h5>
+                                <p class="card-text text-muted">
+                                    <i class="fas fa-map-marker-alt me-2"></i>{{ event.location }}
+                                </p>
+                                <p class="card-text">{{ event.description|striptags|truncatewords:15 }}</p>
+                                
+                                {% if event.artists.exists %}
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="small text-muted me-2">Artists:</span>
+                                        <div class="d-flex">
+                                            {% for artist in event.artists.all|slice:":3" %}
+                                                <a href="{% url 'artist_detail' artist.id %}" class="me-1" title="{{ artist.name }}">
+                                                {% if artist.image %}
+                                                    <img src="{{ artist.image.url }}" alt="{{ artist.name }}" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover; border: 2px solid white;">
+                                                {% else %}
+                                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; border: 2px solid white;">
+                                                        <i class="fas fa-user fa-sm text-white"></i>
+                                                    </div>
+                                                {% endif %}
+                                                </a>
+                                            {% endfor %}
+                                            {% if event.artists.count > 3 %}
+                                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" style="width: 30px; height: 30px; font-size: 0.7rem;">+{{ event.artists.count|add:"-3" }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary mt-3">Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if events.has_other_pages %}
+            <div class="d-flex justify-content-center mt-5">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if events.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ events.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Previous">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fas fa-chevron-left"></i></a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in events.paginator.page_range %}
+                            {% if events.number == num %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                            {% elif num > events.number|add:'-3' and num < events.number|add:'3' %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if events.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ events.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Next">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fas fa-chevron-right"></i></a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info text-center py-5">
+            <i class="fas fa-info-circle fa-3x mb-3"></i>
+            <h4>No Events Found</h4>
+            {% if search_query %}
+                <p>No events matching "{{ search_query }}". Please try a different search term.</p>
+                <a href="{% url 'event_list' %}" class="btn btn-primary mt-3">View All Events</a>
+            {% else %}
+                <p>No past events found. Please check back later!</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

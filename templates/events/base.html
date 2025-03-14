@@ -1,0 +1,311 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Events Portal{% endblock %}</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/logos/favicon.png' %}" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Fancybox CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --accent-color: #fd7e14;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #fafafa;
+            color: #333;
+        }
+        
+        /* Enhanced Header */
+        .app-header {
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand span {
+            margin-left: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            padding: 10px 15px !important;
+            margin: 0 5px;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .nav-link.active, .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        /* Main content */
+        .main-content {
+            min-height: calc(100vh - 180px);
+        }
+        
+        /* Enhanced Footer */
+        footer {
+            background-color: #1a1a2e !important;
+            position: relative;
+        }
+        
+        footer:before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 0;
+            right: 0;
+            height: 15px;
+            background: linear-gradient(135deg, #1a1a2e 25%, transparent 25%) -15px 0,
+                        linear-gradient(225deg, #1a1a2e 25%, transparent 25%) -15px 0,
+                        linear-gradient(315deg, #1a1a2e 25%, transparent 25%),
+                        linear-gradient(45deg, #1a1a2e 25%, transparent 25%);
+            background-size: 30px 30px;
+        }
+        
+        footer h5 {
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        footer h5:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 30px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        /* Enhanced Button Styles */
+        .btn {
+            border-radius: 30px;
+            padding: 8px 24px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 6px 15px rgba(13, 110, 253, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline-primary:hover {
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Card Enhancements */
+        .card {
+            border-radius: 10px;
+            overflow: hidden;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            border-bottom: none;
+            padding: 20px;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* Like button styling */
+        .like-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: inherit;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .like-button:hover {
+            transform: scale(1.1);
+        }
+        
+        .like-button i {
+            color: #ff5e5e;
+            font-size: 1.5rem;
+        }
+        
+        .like-button .like-count {
+            margin-left: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .carousel-inner {
+            overflow: visible;
+          }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header border-bottom sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <img src="{% static 'images/logos/logo.png' %}" alt="Logo" height="40">
+                    <span>Madaniyat Vazirligi</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/events/' in request.path %}active{% endif %}" href="{% url 'event_list' %}">Events</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/artists/' in request.path %}active{% endif %}" href="{% url 'artist_list' %}">Artists</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-white py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Madaniyat Vazirligi</h5>
+                    <p>Celebrating arts and culture across Uzbekistan</p>
+                    <div class="social-links mt-3">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="/" class="text-white text-decoration-none">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'event_list' %}" class="text-white text-decoration-none">Events</a></li>
+                        <li class="mb-2"><a href="{% url 'artist_list' %}" class="text-white text-decoration-none">Artists</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <h5>Contact Us</h5>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> 100128, Tashkent, Uzbekistan</p>
+                    <p><i class="fas fa-envelope me-2"></i> info@madaniyat.uz</p>
+                    <p><i class="fas fa-phone me-2"></i> +998 71 123 4567</p>
+                    <p class="mt-4">&copy; {% now "Y" %} Madaniyat Vazirligi. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'js/vendor.min.js' %}"></script>
+    <script src="{% static 'libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- Fancybox JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+    
+    <!-- Like functionality -->
+    <script>
+        $(document).ready(function() {
+            // Handle like button clicks using AJAX
+            $('.like-button').on('click', function(e) {
+                e.preventDefault();
+                const button = $(this);
+                const form = button.closest('form');
+                
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function(data) {
+                        // Update icon based on response
+                        if (data.action === 'liked') {
+                            button.find('i').removeClass('far').addClass('fas');
+                        } else {
+                            button.find('i').removeClass('fas').addClass('far');
+                        }
+                        
+                        // Update like count
+                        button.find('.like-count').text(data.like_count);
+                    }
+                });
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

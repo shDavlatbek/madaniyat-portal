@@ -1,0 +1,1163 @@
+{% extends 'events/base.html' %}
+{% load static %}
+{% load batch_filter %}
+
+{% block title %}{{ artist.name }} | Madaniyat Vazirligi{% endblock %}
+
+{% block extra_css %}
+<style>
+    .artist-header {
+        padding: 60px 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .artist-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.7);
+        z-index: 1;
+    }
+    
+    .artist-header-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: blur(8px);
+        transform: scale(1.1);
+    }
+    
+    .artist-profile {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .artist-img-container {
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto 30px;
+        border: 5px solid white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .artist-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .artist-info {
+        text-align: center;
+        color: white;
+    }
+    
+    .artist-name {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    .like-container {
+        margin: 20px 0;
+    }
+    
+    .like-btn {
+        background-color: white;
+        color: #ff5e5e;
+        border: none;
+        border-radius: 30px;
+        padding: 10px 25px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s;
+    }
+    
+    .like-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    
+    .like-btn i {
+        font-size: 1.3rem;
+    }
+    
+    .composition-section {
+        padding: 60px 0;
+    }
+    
+    .section-title {
+        position: relative;
+        margin-bottom: 40px;
+        font-weight: 700;
+        display: inline-block;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background-color: var(--primary-color);
+    }
+    
+    /* Enhanced Composition Card */
+    .composition-card {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        height: 350px;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        transform-origin: center bottom;
+    }
+    
+    .composition-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        z-index: 10;
+    }
+    
+    .composition-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+        opacity: 0.85;
+        transition: all 0.5s;
+    }
+    
+    .composition-card:hover .composition-bg {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
+    
+    .composition-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+        z-index: 2;
+    }
+    
+    .composition-type-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 3;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+    
+    .composition-type-badge.video {
+        background-color: #ff4d4d;
+    }
+    
+    .composition-content {
+        position: relative;
+        z-index: 3;
+        padding: 20px;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: end;
+    }
+    
+    .composition-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 1.3rem;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+    
+    .composition-controls {
+        width: 100%;
+        background-color: rgba(0,0,0,0.4);
+        border-radius: 10px;
+        padding: 15px;
+        /* margin-top: auto; */
+    }
+    
+    .music-player audio {
+        width: 100%;
+        height: 35px;
+        border-radius: 5px;
+    }
+    
+    .play-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        margin: 0 auto;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        cursor: pointer;
+        border: none;
+    }
+    
+    .play-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        animation: pulse 1.5s infinite;
+    }
+    
+    .play-btn.video {
+        background-color: #ff4d4d;
+    }
+    
+    .carousel-controls {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+        gap: 15px;
+    }
+    
+    .carousel-control {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--primary-color);
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .carousel-control:hover {
+        background-color: var(--accent-color);
+    }
+    
+    .carousel-dots {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin-top: 20px;
+    }
+    
+    .carousel-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #ddd;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .carousel-dot.active {
+        background-color: var(--primary-color);
+        transform: scale(1.2);
+    }
+    
+    .event-card {
+        display: flex;
+        align-items: center;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-bottom: 15px;
+        transition: all 0.3s;
+    }
+    
+    .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    
+    .event-date {
+        min-width: 80px;
+        height: 80px;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+    
+    .event-date .day {
+        font-size: 1.5rem;
+    }
+    
+    .event-details {
+        padding: 15px;
+        flex: 1;
+    }
+    
+    .event-title {
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
+    
+    .event-location {
+        font-size: 0.9rem;
+        color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .ribbon {
+        position: absolute;
+        top: 10px;
+        left: -10px;
+        z-index: 6;
+        background-color: #ffcd29;
+        color: #333;
+        padding: 5px 10px;
+        font-weight: 700;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        transform: rotate(-5deg);
+    }
+    
+    .ribbon::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -10px;
+        border-top: 10px solid #d9a400;
+        border-left: 10px solid transparent;
+    }
+    
+    @media (max-width: 768px) {
+        .artist-img-container {
+            width: 180px;
+            height: 180px;
+        }
+        
+        .artist-name {
+            font-size: 2rem;
+        }
+        
+        .composition-card {
+            height: 300px;
+        }
+    }
+    
+    /* Additional composition card enhancements */
+    .composition-card {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        height: 350px;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        transform-origin: center bottom;
+    }
+    
+    .composition-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        z-index: 10;
+    }
+    
+    /* Add animation effects */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .play-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        margin: 0 auto;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        cursor: pointer;
+        border: none;
+    }
+    
+    .play-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        animation: pulse 1.5s infinite;
+    }
+    
+    .play-btn.video {
+        background-color: #ff4d4d;
+    }
+    
+    /* Fancybox custom animations */
+    .fancybox-zoomIn {
+        animation: 0.3s ease both fancybox-zoom-in;
+    }
+    
+    .fancybox-zoomOut {
+        animation: 0.3s ease both fancybox-zoom-out;
+    }
+    
+    @keyframes fancybox-zoom-in {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    @keyframes fancybox-zoom-out {
+        from { opacity: 1; transform: scale(1); }
+        to { opacity: 0; transform: scale(0.8); }
+    }
+    
+    .youtube-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        z-index: 5;
+        background-color: #ff0000;
+        color: white;
+        width: 32px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        font-size: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    
+    .youtube-badge:before {
+        content: '';
+        position: absolute;
+        left: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+        border-right: 8px solid #ff0000;
+    }
+    
+    .composition-link {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .composition-link:hover {
+        text-shadow: 0 0 8px rgba(255,255,255,0.6);
+    }
+    
+    .composition-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -4px;
+        left: 0;
+        background-color: white;
+        transition: width 0.3s ease;
+    }
+    
+    .composition-link:hover::after {
+        width: 100%;
+    }
+    
+    .event-link {
+        transition: color 0.3s ease;
+    }
+    
+    .event-link:hover {
+        color: var(--primary-color) !important;
+    }
+    
+    .composition-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: block;
+        z-index: 3;
+        text-decoration: none;
+        color: white;
+    }
+    
+    .composition-wrapper:hover {
+        text-decoration: none;
+        color: white;
+    }
+    
+    .composition-controls {
+        position: relative;
+        z-index: 10;
+    }
+    
+    /* Custom Music Player */
+    .music-player-custom {
+        position: relative;
+        width: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 10px;
+    }
+    
+    .music-player-custom .play-pause-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--primary-color);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+        border: none;
+        outline: none;
+    }
+    
+    .music-player-custom .play-pause-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    .music-player-custom .play-pause-btn i {
+        font-size: 1rem;
+    }
+    
+    .music-player-custom .controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    
+    .music-player-custom .progress-area {
+        height: 6px;
+        width: 100%;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .music-player-custom .progress-area .progress-bar {
+        height: 100%;
+        width: 0%;
+        position: relative;
+        border-radius: 50px;
+        background: linear-gradient(90deg, #1DB954, #56D47E);
+        transition: width 0.1s linear;
+    }
+    
+    .music-player-custom .progress-area .progress-bar::before {
+        content: "";
+        position: absolute;
+        height: 12px;
+        width: 12px;
+        border-radius: 50%;
+        top: 50%;
+        right: -5px;
+        transform: translateY(-50%);
+        background: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .music-player-custom .progress-area:hover .progress-bar::before {
+        opacity: 1;
+    }
+    
+    .music-player-custom .timer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 2px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.75rem;
+    }
+    
+    .music-player-custom .volume-container {
+        display: flex;
+        align-items: center;
+        margin-left: 15px;
+    }
+    
+    .music-player-custom .volume-icon {
+        color: white;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-right: 8px;
+    }
+    
+    .music-player-custom .volume-slider {
+        width: 60px;
+        height: 4px;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .music-player-custom .volume-slider .volume-progress {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.7);
+    }
+    
+    /* Additional Animation for play button */
+    @keyframes pulse-light {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .music-player-custom .play-pause-btn.playing {
+        animation: pulse-light 2s infinite;
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    /* Hide the default audio player */
+    .music-player-custom audio {
+        display: none;
+    }
+    .share-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all 0.3s;
+        margin: 0 5px;
+    }
+    
+    .share-btn:hover {
+        transform: translateY(-3px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Artist Header -->
+<div class="artist-header">
+    {% if artist.image %}
+        <img src="{{ artist.image.url }}" class="artist-header-bg" alt="">
+    {% else %}
+        <div class="artist-header-bg bg-dark"></div>
+    {% endif %}
+    
+    <div class="container">
+        <div class="artist-profile">
+            <div class="artist-img-container">
+                {% if artist.image %}
+                    <img src="{{ artist.image.url }}" class="artist-img" alt="{{ artist.name }}">
+                {% else %}
+                    <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                        <i class="fas fa-user-circle fa-5x text-muted"></i>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="artist-info">
+                <h1 class="artist-name">
+                    <a href="{% url 'artist_detail' artist.id %}" class="text-white text-decoration-none">
+                        {{ artist.name }}
+                    </a>
+                </h1>
+                
+                <div class="like-container">
+                    <form action="{% url 'toggle_like' %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="artist_id" value="{{ artist.id }}">
+                        <button type="button" class="like-btn">
+                            <i class="{% if is_liked %}fas{% else %}far{% endif %} fa-heart"></i>
+                            <span class="like-count">{{ artist.likes.count }} Likes</span>
+                        </button>
+                    </form>
+                </div>
+                
+                {% if artist.compositions.exists %}
+                    <div class="badge bg-light text-primary px-3 py-2 fs-6">
+                        <i class="fas fa-music me-2"></i>{{ artist.compositions.count }} Compositions
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- About Section -->
+            <div class="card mb-5 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="section-title">About the Artist</h2>
+                    <div class="mt-4">
+                        {{ artist.description|safe }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compositions Section (Combined Music and Videos) -->
+            {% if music or videos %}
+                <div class="composition-section">
+                    <h2 class="section-title"><i class="fas fa-compact-disc me-2"></i>Compositions</h2>
+                    
+                    <!-- Music Section -->
+                    {% if music %}
+                        <h3 class="mt-5 mb-4 fw-bold"><i class="fas fa-music me-2"></i>Music</h3>
+                        <div id="musicCarousel" class="carousel slide" data-bs-ride="false">
+                            <div class="carousel-inner">
+                                {% for batch_items in music|dictsortreversed:"created_at"|batch:3 %}
+                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                        <div class="row">
+                                            {% for composition in batch_items %}
+                                                <div class="col-md-4 mb-4">
+                                                    <div class="composition-card">
+                                                        {% if composition.cover_image %}
+                                                            <img src="{{ composition.cover_image.url }}" class="composition-bg" alt="{{ composition.title }}">
+                                                        {% else %}
+                                                            <img src="{% static 'images/music-default-bg.svg' %}" data-fallback-src="{% static 'images/music-default-bg.jpg' %}" class="composition-bg" alt="{{ composition.title }}">
+                                                        {% endif %}
+                                                        <div class="composition-overlay"></div>
+                                                        
+                                                        
+                                                        <div class="composition-type-badge">
+                                                            <i class="fas fa-music me-1"></i> Music
+                                                        </div>
+                                                        
+                                                        <div class="composition-content">
+                                                            <h5 class="composition-title text-white">
+                                                                {{ composition.title }}
+                                                            </h5>
+                                                            
+                                                            <div class="composition-controls">
+                                                                {% if composition.file %}
+                                                                    <div class="music-player-custom" data-audio-src="{{ composition.file.url }}" data-composition-id="{{ composition.id }}">
+                                                                        <div class="controls">
+                                                                            <button type="button" class="play-pause-btn">
+                                                                                <i class="fas fa-play"></i>
+                                                                            </button>
+                                                                            <div class="volume-container">
+                                                                                <i class="fas fa-volume-up volume-icon"></i>
+                                                                                <div class="volume-slider">
+                                                                                    <div class="volume-progress"></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="progress-area">
+                                                                            <div class="progress-bar"></div>
+                                                                        </div>
+                                                                        <div class="timer">
+                                                                            <span class="current">0:00</span>
+                                                                            <span class="duration">0:00</span>
+                                                                        </div>
+                                                                        <audio class="main-audio" src="{{ composition.file.url }}"></audio>
+                                                                    </div>
+                                                                {% elif composition.link %}
+                                                                    <a href="{{ composition.link }}" target="_blank" class="btn btn-primary w-100">
+                                                                        <i class="fas fa-headphones me-2"></i> Listen
+                                                                    </a>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                            {% if music|length > 3 %}
+                                <div class="carousel-controls">
+                                    <button class="carousel-control" type="button" data-bs-target="#musicCarousel" data-bs-slide="prev">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button class="carousel-control" type="button" data-bs-target="#musicCarousel" data-bs-slide="next">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Video Section -->
+                    {% if videos %}
+                        <h3 class="mt-5 mb-4 fw-bold"><i class="fas fa-film me-2"></i>Videos</h3>
+                        <div id="videoCarousel" class="carousel slide" data-bs-ride="false">
+                            <div class="carousel-inner">
+                                {% for batch_items in videos|dictsortreversed:"created_at"|batch:3 %}
+                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                        <div class="row">
+                                            {% for composition in batch_items %}
+                                                <div class="col-md-4 mb-4">
+                                                    <div class="composition-card">
+                                                        {% if composition.cover_image %}
+                                                            <img src="{{ composition.cover_image.url }}" class="composition-bg" alt="{{ composition.title }}">
+                                                        {% else %}
+                                                            <img src="{% static 'images/video-default-bg.svg' %}" data-fallback-src="{% static 'images/video-default-bg.jpg' %}" class="composition-bg" alt="{{ composition.title }}">
+                                                        {% endif %}
+                                                        <div class="composition-overlay"></div>
+                                                        
+                                                        
+                                                        <div class="composition-type-badge video">
+                                                            <i class="fas fa-film me-1"></i> Video
+                                                        </div>
+                                                        
+                                                        {% if composition.link and 'youtube' in composition.link or 'youtu.be' in composition.link %}
+                                                            <a href="{{ composition.link }}" data-fancybox="video-gallery" class="composition-wrapper">
+                                                        {% elif composition.file %}
+                                                            <a href="{{ composition.file.url }}" class="composition-wrapper">
+                                                        {% elif composition.link %}
+                                                            <a href="{{ composition.link }}" target="_blank" class="composition-wrapper">
+                                                        {% else %}
+                                                            <a href="#" class="composition-wrapper">
+                                                        {% endif %}
+                                                            <div class="composition-content">
+                                                                <h5 class="composition-title text-white">
+                                                                    {{ composition.title }}
+                                                                </h5>
+                                                                
+                                                                <div class="composition-controls">
+                                                                    {% if composition.file %}
+                                                                        <button type="button" class="play-btn video" data-src="{{ composition.file.url }}">
+                                                                            <i class="fas fa-play"></i>
+                                                                        </button>
+                                                                    {% elif composition.link %}
+                                                                        {% if 'youtube' in composition.link or 'youtu.be' in composition.link %}
+                                                                            <span class="play-btn video">
+                                                                                <i class="fas fa-play"></i>
+                                                                            </span>
+                                                                        {% else %}
+                                                                            <span class="btn btn-danger w-100">
+                                                                                <i class="fas fa-film me-2"></i> Watch Video
+                                                                            </span>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                            {% if videos|length > 3 %}
+                                <div class="carousel-controls">
+                                    <button class="carousel-control" type="button" data-bs-target="#videoCarousel" data-bs-slide="prev">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button class="carousel-control" type="button" data-bs-target="#videoCarousel" data-bs-slide="next">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Past Events -->
+            {% if artist.events.exists %}
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h5 class="mb-0"><i class="far fa-calendar-alt me-2"></i>Past Events</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        {% for event in artist.events.all|dictsortreversed:"date"|slice:":5" %}
+                            {% if event.date < now %}
+                                <div class="event-card">
+                                    <div class="event-date">
+                                        <div class="month">{{ event.date|date:"M" }}</div>
+                                        <div class="day">{{ event.date|date:"d" }}</div>
+                                    </div>
+                                    <div class="event-details">
+                                        <h6 class="event-title">
+                                            <a href="{% url 'event_detail' event.id %}" class="text-decoration-none text-dark event-link">
+                                                {{ event.title }}
+                                            </a>
+                                        </h6>
+                                        <div class="event-location">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>{{ event.location }}</span>
+                                        </div>
+                                        <a href="{% url 'event_detail' event.id %}" class="btn btn-sm btn-outline-primary mt-2">Details</a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if artist.events.count > 5 %}
+                            <div class="text-center mt-3">
+                                <a href="{% url 'event_list' %}" class="btn btn-primary btn-sm">See All Events</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            {% if artist.facebook_url or artist.instagram_url or artist.youtube_url or artist.x_url %}
+            <div class="card event-info-card">
+                <div class="card-header bg-secondary text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2"></i>Ijtimoiy tarmoqlar</h5>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-muted mb-3">Sanatkor ijtimoiy tarmoqlariga ulaning</p>
+                    <div class="d-flex justify-content-center">
+                        {% if artist.facebook_url %}
+                            <a href="{{ artist.facebook_url }}" 
+                                class="share-btn bg-primary" target="_blank" title="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                        {% endif %}
+                        {% if artist.instagram_url %}
+                            <a href="{{ artist.instagram_url }}" 
+                                class="share-btn" style="background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);" target="_blank" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        {% endif %}
+                        {% if artist.youtube_url %}
+                            <a href="{{ artist.youtube_url }}" 
+                                class="share-btn bg-danger" target="_blank" title="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        {% endif %}
+                        {% if artist.x_url %}
+                            <a href="{{ artist.x_url }}" 
+                                class="share-btn bg-dark" target="_blank" title="X Twitter">
+                                <i class="fab fa-x-twitter"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <!-- Back to Artists -->
+            <div class="card shadow-sm">
+                <div class="card-body p-4 text-center">
+                    <a href="{% url 'artist_list' %}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-arrow-left me-2"></i>Back to All Artists
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/custom-music-player.js' %}"></script>
+<script src="{% static 'js/dynamic-backgrounds.js' %}"></script>
+<script>
+$(document).ready(function() {
+    
+    // Debug info for compositions
+    var musicCount = "{{ music|length|default:'0' }}";
+    var videoCount = "{{ videos|length|default:'0' }}";
+    
+    // Initialize Bootstrap carousel
+    $('#musicCarousel, #videoCarousel').carousel({
+        interval: false // Don't auto-rotate
+    });
+    
+    // Fix for carousel on mobile
+    if ($('.carousel-inner .carousel-item').length > 0) {
+        console.log("Found carousel items");
+    } else {
+        console.log("No carousel items found");
+    }
+    
+    // Custom carousel dots click handler
+    $('.carousel-dot').on('click', function() {
+        var target = $(this).data('bs-target');
+        var slideTo = $(this).data('bs-slide-to');
+        console.log("Navigating to slide:", slideTo);
+        
+        $(target).carousel(slideTo);
+        
+        $(this).siblings().removeClass('active');
+        $(this).addClass('active');
+    });
+    
+    // Update dots on carousel slide
+    $('.carousel').on('slide.bs.carousel', function(e) {
+        var $carousel = $(this);
+        var $dots = $('[data-bs-target="#' + $carousel.attr('id') + '"]');
+        
+        $dots.removeClass('active');
+        $dots.eq(e.to).addClass('active');
+    });
+    
+    // Initialize Fancybox for videos
+    try {
+        Fancybox.bind("[data-fancybox]", {
+            // Video options
+            youtube: {
+                controls: 1,
+                rel: 0,
+                autoplay: 1
+            },
+            // UI customization
+            Toolbar: {
+                display: [
+                    { id: "counter", position: "left" },
+                    "slideshow",
+                    "fullscreen",
+                    "close"
+                ]
+            },
+            // Animation
+            animated: true,
+            dragToClose: false,
+            // Appearance
+            showClass: "fancybox-zoomIn",
+            hideClass: "fancybox-zoomOut",
+            // Caption
+            caption: function (fancybox, slide) {
+                const composition = $(slide.triggerEl).closest('.composition-card').find('.composition-title').text();
+                const artist = $('.artist-name').text();
+                return composition + " - " + artist;
+            }
+        });
+        console.log("Fancybox initialized");
+    } catch (e) {
+        console.error("Error initializing Fancybox:", e);
+    }
+    
+    // Smooth scrolling for internal links
+    $('a[href^="#"]').on('click', function(e) {
+        e.preventDefault();
+        $('html, body').animate({
+            scrollTop: $($(this).attr('href')).offset().top - 100
+        }, 500);
+    });
+    
+    // Like button functionality
+    $('.like-btn').on('click', function() {
+        let $form = $(this).closest('form');
+        $.ajax({
+            url: $form.attr('action'),
+            type: 'POST',
+            data: $form.serialize(),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                if (data.action === 'liked') {
+                    $('.like-btn i').removeClass('far').addClass('fas');
+                } else {
+                    $('.like-btn i').removeClass('fas').addClass('far');
+                }
+                $('.like-count').text(data.like_count + ' Likes');
+            }
+        });
+    });
+
+    // Function to extract YouTube video ID from various URL formats
+    function getYoutubeId(url) {
+        if (!url) return null;
+        
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    // Handle video thumbnails for YouTube links
+    $('.composition-card').each(function() {
+        const $card = $(this);
+        const $link = $card.find('a[data-fancybox="video-gallery"], a[data-fancybox="video-title-gallery"]');
+        
+        if ($link.length) {
+            const url = $link.attr('href');
+            const youtubeId = getYoutubeId(url);
+            
+            if (youtubeId) {
+                console.log("Found YouTube ID:", youtubeId);
+                // If there's no background image already set from server or it's a default image
+                const $bg = $card.find('.composition-bg');
+                if ($bg.attr('src') && $bg.attr('src').includes('default-bg')) {
+                    // Set YouTube thumbnail as background
+                    // Try high quality first
+                    const highQualityThumbnail = "https://img.youtube.com/vi/" + youtubeId + "/maxresdefault.jpg";
+                    const mediumQualityThumbnail = "https://img.youtube.com/vi/" + youtubeId + "/mqdefault.jpg";
+                    const standardThumbnail = "https://img.youtube.com/vi/" + youtubeId + "/0.jpg";
+                    
+                    // Create a new Image to test if high quality thumbnail exists
+                    const img = new Image();
+                    img.onload = function() {
+                        // If high quality thumbnail loads successfully and is not the default thumbnail (120x90)
+                        if (this.width > 120) {
+                            $bg.attr('src', highQualityThumbnail);
+                        } else {
+                            // Try medium quality
+                            $bg.attr('src', mediumQualityThumbnail);
+                        }
+                    };
+                    img.onerror = function() {
+                        // If high quality fails, use standard
+                        $bg.attr('src', standardThumbnail);
+                    };
+                    img.src = highQualityThumbnail;
+                    
+                    // Add YouTube logo badge if not already there
+                    if (!$card.find('.youtube-badge').length) {
+                        $card.append('<div class="youtube-badge"><i class="fab fa-youtube"></i></div>');
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %} 

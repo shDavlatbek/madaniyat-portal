@@ -1,0 +1,247 @@
+{% extends 'events/base.html' %}
+{% load static %}
+
+{% block title %}Artists | Madaniyat Vazirligi{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-banner {
+        background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('{% static "images/artist-banner.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        position: relative;
+    }
+    
+    .page-banner h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    .artist-card {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        height: 100%;
+    }
+    
+    .artist-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+    
+    .artist-img-container {
+        position: relative;
+        overflow: hidden;
+        height: 300px;
+    }
+    
+    .artist-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: all 0.5s ease;
+    }
+    
+    .artist-card:hover .artist-img {
+        transform: scale(1.1);
+    }
+    
+    .artist-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
+        padding: 20px;
+        transition: all 0.3s;
+    }
+    
+    .artist-overlay .artist-name {
+        color: white;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+    
+    .artist-meta {
+        background-color: white;
+        padding: 15px;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .badge-artist {
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 500;
+        font-size: 0.8rem;
+        padding: 5px 12px;
+        border-radius: 20px;
+    }
+    
+    .likes-count {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: rgba(255,255,255,0.9);
+        color: #ff5e5e;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        z-index: 10;
+    }
+    
+    /* Pagination */
+    .pagination .page-item .page-link {
+        border-radius: 50%;
+        margin: 0 5px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Banner -->
+<div class="page-banner mb-5">
+    <div class="container text-center">
+        <h1>Our Talented Artists</h1>
+        <p class="lead">Discover exceptional artists from across Uzbekistan</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <!-- Search Area -->
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">Showing {% if search_query %}search results for "{{ search_query }}"{% else %}all artists{% endif %}</h5>
+                    </div>
+                    <div>
+                        <form action="{% url 'artist_list' %}" method="get" class="d-flex">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search artists..." name="search" value="{{ search_query }}" aria-label="Search artists">
+                                <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+                            </div>
+                            {% if search_query %}
+                                <a href="{% url 'artist_list' %}" class="btn btn-outline-secondary ms-2">Clear</a>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if artists %}
+        <div class="row">
+            {% for artist in artists %}
+                <div class="col-md-3 mb-4">
+                    <div class="artist-card">
+                        <div class="artist-img-container">
+                            <a href="{% url 'artist_detail' artist.id %}">
+                            {% if artist.image %}
+                                <img src="{{ artist.image.url }}" class="artist-img" alt="{{ artist.name }}">
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                    <i class="fas fa-user-circle fa-4x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            </a>
+                            <div class="likes-count">
+                                <i class="fas fa-heart"></i> {{ artist.likes.count }}
+                            </div>
+                            <div class="artist-overlay">
+                                <h5 class="artist-name"><a href="{% url 'artist_detail' artist.id %}" class="text-white text-decoration-none">{{ artist.name }}</a></h5>
+                            </div>
+                        </div>
+                        <div class="artist-meta">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge-artist"><i class="fas fa-music me-1"></i> {{ artist.compositions.count }} compositions</span>
+                                {% if artist.events.exists %}
+                                    <span class="badge bg-primary">
+                                        <i class="far fa-calendar-alt me-1"></i> Has events
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'artist_detail' artist.id %}" class="btn btn-primary w-100">View Profile</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if artists.has_other_pages %}
+            <div class="d-flex justify-content-center mt-5">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if artists.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ artists.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Previous">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fas fa-chevron-left"></i></a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in artists.paginator.page_range %}
+                            {% if artists.number == num %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                            {% elif num > artists.number|add:'-3' and num < artists.number|add:'3' %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if artists.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ artists.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Next">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fas fa-chevron-right"></i></a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info text-center py-5">
+            <i class="fas fa-info-circle fa-3x mb-3"></i>
+            <h4>No Artists Found</h4>
+            {% if search_query %}
+                <p>No artists matching "{{ search_query }}". Please try a different search term.</p>
+                <a href="{% url 'artist_list' %}" class="btn btn-primary mt-3">View All Artists</a>
+            {% else %}
+                <p>We don't have any artists in our database yet. Please check back later!</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

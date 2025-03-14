@@ -28,11 +28,6 @@ SECRET_KEY = 'django-insecure-tdt##wrfc**%si0inx&!y1j5bj2vy8)il*1+213g9i*d=3_ie7
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
-
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-USE_X_FORWARDED_HOST = True
 
 # Application definition
 
@@ -44,13 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',
     'tinymce',
-    'drf_yasg',
+    'events',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -66,7 +59,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -140,10 +133,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-TINYMCE_JS_URL = "libs/tinymce/tinymce.min.js"
+# TINYMCE_JS_URL = "libs/tinymce/tinymce.min.js"
 
 TINYMCE_DEFAULT_CONFIG = {
-    "theme": "silver",
     "height": "500px",
     "branding": False,
     "width": "110%",
@@ -202,6 +194,19 @@ TINYMCE_DEFAULT_CONFIG = {
     """
 }
 
+
+TINYMCE_DEFAULT_CONFIG = {
+    "theme": "silver",
+    "height": 500,
+    "menubar": False,
+    "plugins": "advlist,autolink,lists,link,image,charmap,print,preview,anchor,"
+    "searchreplace,visualblocks,code,fullscreen,insertdatetime,media,table,paste,"
+    "code,help,wordcount",
+    "toolbar": "undo redo | formatselect | "
+    "bold italic backcolor | alignleft aligncenter "
+    "alignright alignjustify | bullist numlist outdent indent | "
+    "removeformat | help",
+}
 JAZZMIN_SETTINGS = {
     "site_title": "Admin panel",
 
@@ -221,6 +226,5 @@ JAZZMIN_SETTINGS = {
     "default_icon_children": "fas fa-circle",
     "related_modal_active": True,
     # "changeform_format": "single",
-    "language_chooser": True,
 }
 

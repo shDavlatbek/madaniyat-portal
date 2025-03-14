@@ -1,0 +1,380 @@
+{% extends 'events/base.html' %}
+{% load static %}
+{% load float_fix %}
+{% block title %}{{ event.title }} | Madaniyat Vazirligi{% endblock %}
+
+{% block extra_css %}
+<style>
+    .event-header {
+        position: relative;
+        background-color: #f8f9fa;
+        overflow: hidden;
+    }
+    
+    .event-header-img {
+        height: 500px;
+        width: 100%;
+        object-fit: cover;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    
+    .event-info-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        border: none;
+    }
+    
+    .event-title {
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 15px;
+    }
+    
+    .event-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 70px;
+        height: 3px;
+        background-color: var(--primary-color);
+    }
+    
+    .event-meta-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        background-color: rgba(0,0,0,0.03);
+        padding: 12px 15px;
+        border-radius: 8px;
+    }
+    
+    .event-meta-icon {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+    }
+    
+    .event-meta-text {
+        font-weight: 500;
+    }
+    
+    .event-meta-label {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--secondary-color);
+        margin-bottom: 3px;
+    }
+    
+    .event-description {
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+    
+    .event-description p {
+        margin-bottom: 1.25rem;
+    }
+    
+    .artist-card {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        background-color: white;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+    }
+    
+    .artist-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .artist-image {
+        width: 70px;
+        height: 70px;
+        border-radius: 10px;
+        object-fit: cover;
+        margin-right: 15px;
+    }
+    
+    .artist-info {
+        flex: 1;
+    }
+    
+    .artist-name {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    
+    .share-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all 0.3s;
+        margin: 0 5px;
+    }
+    
+    .share-btn:hover {
+        transform: translateY(-3px);
+    }
+    
+    .back-button {
+        position: fixed;
+        left: 30px;
+        top: 90px;
+        z-index: 100;
+        background-color: white;
+        color: var(--primary-color);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+    }
+    
+    .back-button:hover {
+        transform: translateX(-5px);
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .related-events-title {
+        position: relative;
+        margin-bottom: 1.5rem;
+        padding-bottom: 15px;
+        font-weight: 700;
+    }
+    
+    .related-events-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background-color: var(--primary-color);
+    }
+    
+    @media (max-width: 768px) {
+        .event-title {
+            font-size: 2rem;
+        }
+        
+        .back-button {
+            top: auto;
+            bottom: 30px;
+            left: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Back Button -->
+<a href="{% url 'event_list' %}" class="back-button">
+    <i class="fas fa-arrow-left"></i>
+</a>
+
+<!-- Event Header -->
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-md-12">
+            {% if event.image %}
+                <img src="{{ event.image.url }}" class="event-header-img" alt="{{ event.title }}">
+            {% else %}
+                <div class="event-header-img d-flex align-items-center justify-content-center bg-light">
+                    <i class="fas fa-calendar-alt fa-5x text-muted"></i>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Event Details -->
+        <div class="col-lg-8 mb-4">
+            <div class="card event-info-card">
+                <div class="card-body p-4 p-md-5">
+                    <h1 class="event-title">{{ event.title }}</h1>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="event-meta-item">
+                                <div class="event-meta-icon">
+                                    <i class="far fa-calendar-alt"></i>
+                                </div>
+                                <div class="event-meta-text">
+                                    <span class="event-meta-label">Tadbir sanasi</span>
+                                    {{ event.date|date:"F j, Y" }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="event-meta-item">
+                                <div class="event-meta-icon">
+                                    <i class="far fa-font-awesome"></i>
+                                </div>
+                                <div class="event-meta-text">
+                                    <span class="event-meta-label">Tadbir turi</span>
+                                    {{ event.get_type_display }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="event-meta-item">
+                                <div class="event-meta-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="event-meta-text">
+                                    <span class="event-meta-label">Manzil</span>
+                                    {{ event.location }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <!-- MAP -->
+                            {% if event.latitude and event.longitude %}
+                                <div id="map" style="height: 300px; width: 100%; border-radius: 10px; margin-top: 20px;" class="shadow-sm"></div>
+                                
+                                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                                <script src="https://cdn.maptiler.com/maptiler-sdk-js/v3.0.1/maptiler-sdk.umd.min.js"></script>
+                                <link href="https://cdn.maptiler.com/maptiler-sdk-js/v3.0.1/maptiler-sdk.css" rel="stylesheet" />
+                                <script src="https://cdn.maptiler.com/leaflet-maptilersdk/v4.0.2/leaflet-maptilersdk.umd.min.js"></script>
+                                <script>
+                                    // Initialize the map
+                                    const map = L.map('map').setView([{{ event.latitude|replace_comma }}, {{ event.longitude|replace_comma }}], 15);
+                                    
+                                    // Add custom tile layer instead of OpenStreetMap
+                                    const key = 'XcL6b3Sx0AnqO90X2oUF';
+                                    const mtLayer = L.maptiler.maptilerLayer({
+                                        apiKey: key,
+                                        style: "https://api.maptiler.com/maps/streets-v2/style.json?key=XcL6b3Sx0AnqO90X2oUF",
+                                    }).addTo(map);
+                                                                    // Add a marker at the event location
+                                    const marker = L.marker([{{ event.latitude|replace_comma }}, {{ event.longitude|replace_comma }}])
+                                        .addTo(map)
+                                        .bindPopup("{{ event.title }}")
+                                        .openPopup();
+                                </script>
+                            {% endif %}
+                        </div>
+                        {% if event.latitude and event.longitude %}
+                        <div class="col-12">
+                            <div class="mt-3">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="https://www.google.com/maps?q={{ event.latitude|replace_comma }},{{ event.longitude|replace_comma }}"
+                                        target="_blank" class="btn btn-primary">
+                                        <i class="fab fa-google me-2"></i>Open in Google Maps
+                                    </a>
+                                    <a href="https://yandex.com/maps/?ll={{ event.longitude|replace_comma }},{{ event.latitude|replace_comma }}&z=15&pt={{ event.longitude|replace_comma }},{{ event.latitude|replace_comma }}"
+                                        target="_blank" class="btn btn-danger">
+                                        <i class="fas fa-map-marker-alt me-2"></i>Open in Yandex Maps
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="event-description">
+                        {{ event.description|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Featured Artists -->
+            <div class="card event-info-card">
+                <div class="card-header bg-secondary text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2"></i>Featured Artists</h5>
+                </div>
+                <div class="card-body p-4">
+                    {% if event.artists.exists %}
+                        {% for artist in event.artists.all %}
+                            <div class="artist-card">
+                                <a href="{% url 'artist_detail' artist.id %}">
+                                {% if artist.image %}
+                                    <img src="{{ artist.image.url }}" class="artist-image" alt="{{ artist.name }}">
+                                {% else %}
+                                    <div class="artist-image bg-light d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-user text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                </a>
+                                <div class="artist-info">
+                                    <h6 class="artist-name"><a href="{% url 'artist_detail' artist.id %}" class="text-decoration-none">{{ artist.name }}</a></h6>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-light text-primary me-2">
+                                            <i class="fas fa-music me-1"></i> {{ artist.compositions.count }}
+                                        </span>
+                                        <span class="badge bg-light text-danger">
+                                            <i class="fas fa-heart me-1"></i> {{ artist.likes.count }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <a href="{% url 'artist_detail' artist.id %}" class="btn btn-sm btn-outline-primary ms-auto">View</a>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No artists have been announced for this event yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Share Event -->
+            <div class="card event-info-card">
+                <div class="card-header bg-secondary text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-share-alt me-2"></i>Share Event</h5>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-muted mb-3">Share this event with your friends and family</p>
+                    <div class="d-flex justify-content-center">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                           class="share-btn bg-primary" target="_blank" title="Share on Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ event.title }}" 
+                           class="share-btn bg-info" target="_blank" title="Share on Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}" 
+                           class="share-btn bg-secondary" target="_blank" title="Share on LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://api.whatsapp.com/send?text={{ event.title }} {{ request.build_absolute_uri }}" 
+                           class="share-btn bg-success" target="_blank" title="Share on WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
