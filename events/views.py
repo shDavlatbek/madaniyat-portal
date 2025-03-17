@@ -11,22 +11,18 @@ from django.db.models import Q
 
 def home(request):
     # Get featured events (or notable past events if no featured ones)
-    featured_events = Event.objects.filter(is_featured=True, date__lt=timezone.now()).order_by('-date')[:3]
+    featured_events = Event.objects.filter(is_featured=True).order_by('-date')[:3]
     
     # If there are not enough featured events, supplement with regular past events
     if featured_events.count() < 3:
-        additional_events = Event.objects.filter(
-            date__lt=timezone.now()
-        ).exclude(
+        additional_events = Event.objects.all().exclude(
             id__in=featured_events.values_list('id', flat=True)
         ).order_by('-date')[:3-featured_events.count()]
         
         featured_events = list(featured_events) + list(additional_events)
     
     # Get past events for the events section
-    past_events = Event.objects.filter(
-        date__lt=timezone.now()
-    ).order_by('-date')[:3]
+    past_events = Event.objects.all().order_by('-date')[:3]
     
     # Get featured artists (or artists with most likes if no featured ones)
     featured_artists = list(Artist.objects.filter(is_featured=True)[:4])
@@ -70,7 +66,7 @@ def event_list(request):
             Q(location__icontains=search_query)
         ).filter(date__lt=timezone.now()).order_by('-date')
     else:
-        events = Event.objects.filter(date__lt=timezone.now()).order_by('-date')
+        events = Event.objects.all().order_by('-date')
     
     # Set up pagination - 9 events per page
     paginator = Paginator(events, 9)
