@@ -28,6 +28,7 @@ SECRET_KEY = 'django-insecure-tdt##wrfc**%si0inx&!y1j5bj2vy8)il*1+213g9i*d=3_ie7
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ['https://portal.madaniyat.uz', 'http://portal.madaniyat.uz']
 
 # Application definition
 
