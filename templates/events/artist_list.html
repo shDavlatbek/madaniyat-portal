@@ -1,7 +1,7 @@
 {% extends 'events/base.html' %}
 {% load static %}
 
-{% block title %}Artists | Madaniyat Vazirligi{% endblock %}
+{% block title %}Sanʼatkorlar | Madaniyat Vazirligi{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -123,8 +123,8 @@
 <!-- Page Banner -->
 <div class="page-banner mb-5">
     <div class="container text-center">
-        <h1>Our Talented Artists</h1>
-        <p class="lead">Discover exceptional artists from across Uzbekistan</p>
+        <h1 class="text-white">Sanʼatkorlar</h1>
+        <p class="lead">O'zbekiston bo'ylab sanʼatkorlar haqida maʼlumot oling</p>
     </div>
 </div>
 
@@ -135,16 +135,16 @@
             <div class="card shadow-sm">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
-                        <h5 class="mb-0">Showing {% if search_query %}search results for "{{ search_query }}"{% else %}all artists{% endif %}</h5>
+                        <h5 class="mb-0">{% if search_query %}"{{ search_query }}" bo'yicha izlash{% else %}Barcha sanʼatkorlar{% endif %}</h5>
                     </div>
                     <div>
                         <form action="{% url 'artist_list' %}" method="get" class="d-flex">
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Search artists..." name="search" value="{{ search_query }}" aria-label="Search artists">
+                                <input type="text" class="form-control" placeholder="Sanʼatkor izlash..." name="search" value="{{ search_query }}" aria-label="Sanʼatkor izlash">
                                 <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
                             </div>
                             {% if search_query %}
-                                <a href="{% url 'artist_list' %}" class="btn btn-outline-secondary ms-2">Clear</a>
+                                <a href="{% url 'artist_list' %}" class="btn btn-outline-secondary ms-2">Tozalash</a>
                             {% endif %}
                         </form>
                     </div>
@@ -177,14 +177,14 @@
                         </div>
                         <div class="artist-meta">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="badge-artist"><i class="fas fa-music me-1"></i> {{ artist.compositions.count }} compositions</span>
+                                <span class="badge-artist"><i class="fas fa-music me-1"></i> {{ artist.compositions.count }}</span>
                                 {% if artist.events.exists %}
                                     <span class="badge bg-primary">
-                                        <i class="far fa-calendar-alt me-1"></i> Has events
+                                        <i class="far fa-calendar-alt me-1"></i>
                                     </span>
                                 {% endif %}
                             </div>
-                            <a href="{% url 'artist_detail' artist.id %}" class="btn btn-primary w-100">View Profile</a>
+                            <a href="{% url 'artist_detail' artist.id %}" class="btn btn-primary w-100">Batafsil</a>
                         </div>
                     </div>
                 </div>
@@ -234,12 +234,12 @@
     {% else %}
         <div class="alert alert-info text-center py-5">
             <i class="fas fa-info-circle fa-3x mb-3"></i>
-            <h4>No Artists Found</h4>
+            <h4>Sanʼatkorlar topilmadi</h4>
             {% if search_query %}
-                <p>No artists matching "{{ search_query }}". Please try a different search term.</p>
-                <a href="{% url 'artist_list' %}" class="btn btn-primary mt-3">View All Artists</a>
+                <p>“{{ search_query }}” ga mos keladigan sanʼatkor topilmadi. Boshqa qidiruv soʻzini sinab koʻring.</p>
+                <a href="{% url 'artist_list' %}" class="btn btn-primary mt-3">Barcha sanʼatkorlar</a>
             {% else %}
-                <p>We don't have any artists in our database yet. Please check back later!</p>
+                <p>Ma'lumotlar mavjud emas.</p>
             {% endif %}
         </div>
     {% endif %}

@@ -285,11 +285,11 @@
                                 <div class="d-flex gap-2 justify-content-end">
                                     <a href="https://www.google.com/maps?q={{ event.latitude|replace_comma }},{{ event.longitude|replace_comma }}"
                                         target="_blank" class="btn btn-primary">
-                                        <i class="fab fa-google me-2"></i>Open in Google Maps
+                                        <i class="fab fa-google me-2"></i>Google Maps
                                     </a>
                                     <a href="https://yandex.com/maps/?ll={{ event.longitude|replace_comma }},{{ event.latitude|replace_comma }}&z=15&pt={{ event.longitude|replace_comma }},{{ event.latitude|replace_comma }}"
                                         target="_blank" class="btn btn-danger">
-                                        <i class="fas fa-map-marker-alt me-2"></i>Open in Yandex Maps
+                                        <i class="fas fa-map-marker-alt me-2"></i>Yandex Maps
                                     </a>
                                 </div>
                             </div>
@@ -309,7 +309,7 @@
             <!-- Featured Artists -->
             <div class="card event-info-card">
                 <div class="card-header bg-secondary text-white py-3">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2"></i>Featured Artists</h5>
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2"></i>Ishtirok etgan sanʼatkorlar</h5>
                 </div>
                 <div class="card-body p-4">
                     {% if event.artists.exists %}
@@ -335,13 +335,13 @@
                                         </span>
                                     </div>
                                 </div>
-                                <a href="{% url 'artist_detail' artist.id %}" class="btn btn-sm btn-outline-primary ms-auto">View</a>
+                                <a href="{% url 'artist_detail' artist.id %}" class="btn btn-sm btn-outline-primary ms-auto">Batafsil</a>
                             </div>
                         {% endfor %}
                     {% else %}
                         <div class="text-center py-4">
                             <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
-                            <p class="text-muted">No artists have been announced for this event yet.</p>
+                            <p class="text-muted">Ushbu tadbirda hech qanday san'atkor ishtirok etmagan.</p>
                         </div>
                     {% endif %}
                 </div>
@@ -350,25 +350,25 @@
             <!-- Share Event -->
             <div class="card event-info-card">
                 <div class="card-header bg-secondary text-white py-3">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-share-alt me-2"></i>Share Event</h5>
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-share-alt me-2"></i>Ulashish</h5>
                 </div>
                 <div class="card-body p-4">
-                    <p class="text-muted mb-3">Share this event with your friends and family</p>
+                    <p class="text-muted mb-3">Ushbu tadbirni do'stlaringiz va oilangiz bilan ulashing</p>
                     <div class="d-flex justify-content-center">
                         <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
-                           class="share-btn bg-primary" target="_blank" title="Share on Facebook">
+                           class="share-btn bg-primary" target="_blank" title="Facebook">
                             <i class="fab fa-facebook-f"></i>
                         </a>
                         <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ event.title }}" 
-                           class="share-btn bg-info" target="_blank" title="Share on Twitter">
-                            <i class="fab fa-twitter"></i>
+                           class="share-btn bg-dark" target="_blank" title="X Twitter">
+                            <i class="fab fa-x-twitter"></i>
                         </a>
                         <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}" 
-                           class="share-btn bg-secondary" target="_blank" title="Share on LinkedIn">
+                           class="share-btn bg-secondary" target="_blank" title="LinkedIn">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
                         <a href="https://api.whatsapp.com/send?text={{ event.title }} {{ request.build_absolute_uri }}" 
-                           class="share-btn bg-success" target="_blank" title="Share on WhatsApp">
+                           class="share-btn bg-success" target="_blank" title="WhatsApp">
                             <i class="fab fa-whatsapp"></i>
                         </a>
                     </div>

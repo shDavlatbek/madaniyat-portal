@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Events Portal{% endblock %}</title>
-    <link rel="shortcut icon" type="image/png" href="{% static 'images/logos/favicon.png' %}" />
+    <title>{% block title %}Madaniyat Vazirligi - Madaniy tadbirlar va Sanʼatkorlar portali{% endblock %}</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/logos/logo.png' %}" />
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -215,13 +215,13 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">Home</a>
+                            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">Bosh sahifa</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if '/events/' in request.path %}active{% endif %}" href="{% url 'event_list' %}">Events</a>
+                            <a class="nav-link {% if '/events/' in request.path %}active{% endif %}" href="{% url 'event_list' %}">Tadbirlar</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if '/artists/' in request.path %}active{% endif %}" href="{% url 'artist_list' %}">Artists</a>
+                            <a class="nav-link {% if '/artists/' in request.path %}active{% endif %}" href="{% url 'artist_list' %}">Sanʼatkorlar</a>
                         </li>
                     </ul>
                 </div>
@@ -239,8 +239,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <h5>Madaniyat Vazirligi</h5>
-                    <p>Celebrating arts and culture across Uzbekistan</p>
+                    <h5 class="text-white">Madaniyat Vazirligi</h5>
+                    <p>Madaniy tadbirlar va Sanʼatkorlar portali</p>
                     <div class="social-links mt-3">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -249,19 +249,19 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <h5>Quick Links</h5>
+                    <h5 class="text-white">Foydali havolalar</h5>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="/" class="text-white text-decoration-none">Home</a></li>
-                        <li class="mb-2"><a href="{% url 'event_list' %}" class="text-white text-decoration-none">Events</a></li>
-                        <li class="mb-2"><a href="{% url 'artist_list' %}" class="text-white text-decoration-none">Artists</a></li>
+                        <li class="mb-2"><a href="/" class="text-white text-decoration-none">Bosh sahifa</a></li>
+                        <li class="mb-2"><a href="{% url 'event_list' %}" class="text-white text-decoration-none">Tadbirlar</a></li>
+                        <li class="mb-2"><a href="{% url 'artist_list' %}" class="text-white text-decoration-none">Sanʼatkorlar</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4 text-md-end">
-                    <h5>Contact Us</h5>
-                    <p><i class="fas fa-map-marker-alt me-2"></i> 100128, Tashkent, Uzbekistan</p>
+                    <h5 class="text-white">Biz bilan bogʻlanish</h5>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> 100128, Toshkent, Oʻzbekiston</p>
                     <p><i class="fas fa-envelope me-2"></i> info@madaniyat.uz</p>
                     <p><i class="fas fa-phone me-2"></i> +998 71 123 4567</p>
-                    <p class="mt-4">&copy; {% now "Y" %} Madaniyat Vazirligi. All rights reserved.</p>
+                    <p class="mt-4">&copy; {% now "Y" %} Madaniyat Vazirligi. Barcha huquqlar himoyalangan.</p>
                 </div>
             </div>
         </div>
