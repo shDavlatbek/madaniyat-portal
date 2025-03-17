@@ -4,9 +4,9 @@ from tinymce.models import HTMLField
 
 
 class Artist(models.Model):
-    name = models.CharField(max_length=255, verbose_name="Xonanda nomi")
-    description = HTMLField(verbose_name="Xonanda tafsilotlari")
-    image = models.ImageField(upload_to='artists/', null=True, blank=True, verbose_name="Xonanda rasmi")
+    name = models.CharField(max_length=255, verbose_name="Sanʼatkor nomi")
+    description = HTMLField(verbose_name="Sanʼatkor tafsilotlari")
+    image = models.ImageField(upload_to='artists/', null=True, blank=True, verbose_name="Sanʼatkor rasmi")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="O'zgartirilgan vaqt")
     is_featured = models.BooleanField(default=False)
@@ -19,8 +19,8 @@ class Artist(models.Model):
         return self.name
     
     class Meta:
-        verbose_name = "Xonanda "
-        verbose_name_plural = "Xonandalar"
+        verbose_name = "Sanʼatkor "
+        verbose_name_plural = "Sanʼatkorlar"
 
 
 class CompositionType(models.TextChoices):
@@ -38,7 +38,7 @@ class Composition(models.Model):
     cover_image = models.ImageField(upload_to='composition_covers/', blank=True, null=True, verbose_name="Kompozitsiya rasmi")
     title = models.CharField(max_length=255, verbose_name="Kompozitsiya nomi")
     description = models.TextField(blank=True, null=True, verbose_name="Kompozitsiya tafsilotlari")
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='compositions', verbose_name="Xonanda")
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='compositions', verbose_name="Sanʼatkor")
     type = models.CharField(max_length=10, choices=CompositionType.choices, default=CompositionType.MUSIC, verbose_name="Turi")
     file = models.FileField(upload_to='compositions/', null=True, blank=True, verbose_name="Fayl")
     link = models.URLField(blank=True, null=True, verbose_name="Youtube havola")
@@ -60,7 +60,7 @@ class Event(models.Model):
     date = models.DateTimeField(verbose_name="Tadbir sanasi")
     location = models.CharField(max_length=255, verbose_name="Tadbir manzili")
     type = models.CharField(max_length=255, choices=EVENT_TYPE, verbose_name="Tadbir turi")
-    artists = models.ManyToManyField(Artist, related_name='events', blank=True, verbose_name="Xonandalar")
+    artists = models.ManyToManyField(Artist, related_name='events', blank=True, verbose_name="Sanʼatkorlar")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="O'zgartirilgan vaqt")
     is_featured = models.BooleanField(default=False)
@@ -80,7 +80,7 @@ class Event(models.Model):
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Foydalanuvchi")
     session_key = models.CharField(max_length=40, null=True, blank=True, verbose_name="Session key")
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='likes', verbose_name="Xonanda")
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='likes', verbose_name="Sanʼatkor")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
     
     class Meta:

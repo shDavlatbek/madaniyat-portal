@@ -1,7 +1,7 @@
 {% extends 'events/base.html' %}
 {% load static %}
 
-{% block title %}Madaniyat Vazirligi - Events & Artists Portal{% endblock %}
+{% block title %}Madaniyat Vazirligi - Madaniy tadbirlar va Sanʼatkorlar portali{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/custom-music-player.css' %}">
@@ -457,7 +457,7 @@
                             <h1 class="mb-3"><a href="{% url 'event_detail' event.id %}" class="text-white text-decoration-none">{{ event.title }}</a></h1>
                             <p class="mb-4">{{ event.date|date:"F j, Y" }} • {{ event.location }}</p>
                             <p class="mb-4">{{ event.description|striptags|truncatewords:25 }}</p>
-                            <a href="{% url 'event_detail' event.id %}" class="btn btn-primary btn-lg">View Details</a>
+                            <a href="{% url 'event_detail' event.id %}" class="btn btn-primary btn-lg">Batafsil</a>
                         </div>
                     </div>
                 </div>
@@ -467,11 +467,11 @@
                 <div class="hero-slide d-flex align-items-center" data-background="{% static 'images/default-event-bg.jpg' %}">
                     <div class="container">
                         <div class="hero-content">
-                            <h1 class="mb-3">Welcome to Madaniyat Vazirligi</h1>
-                            <p class="mb-4">Discover cultural events, artists, and performances across Uzbekistan</p>
+                            <h1 class="mb-3 text-white">Madaniy tadbirlar va Sanʼatkorlar portaliga xush kelibsiz</h1>
+                            <p class="mb-4">Oʻzbekiston boʻylab madaniy tadbirlar, sanʼatkorlar va chiqishlar bilan tanishing</p>
                             <div class="d-flex gap-3">
-                                <a href="{% url 'event_list' %}" class="btn btn-primary btn-lg">Explore Events</a>
-                                <a href="{% url 'artist_list' %}" class="btn btn-outline-light btn-lg">Meet Artists</a>
+                                <a href="{% url 'event_list' %}" class="btn btn-primary btn-lg">Tadibrlar</a>
+                                <a href="{% url 'artist_list' %}" class="btn btn-outline-light btn-lg">Sanʼatkorlar</a>
                             </div>
                         </div>
                     </div>
@@ -482,18 +482,18 @@
     
     <button class="carousel-control-prev" type="button" data-bs-target="#heroSlider" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
+        <span class="visually-hidden">Oldingi</span>
     </button>
     <button class="carousel-control-next" type="button" data-bs-target="#heroSlider" data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
+        <span class="visually-hidden">Keyingi</span>
     </button>
 </div>
 
 <!-- Past Events -->
 <section class="py-5">
     <div class="container">
-        <h2 class="section-title">Past Events</h2>
+        <h2 class="section-title">Tadbirlar</h2>
         <div class="row">
             {% for event in past_events|slice:":3" %}
                 <div class="col-md-4 mb-4 d-flex align-items-stretch">
@@ -517,20 +517,20 @@
                                 <i class="fas fa-map-marker-alt me-2"></i>{{ event.location }}
                             </p>
                             <p class="card-text">{{ event.description|striptags|truncatewords:15 }}</p>
-                            <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary">Details</a>
+                            <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary">Batafsil</a>
                         </div>
                     </div>
                 </div>
             {% empty %}
                 <div class="col-12">
                     <div class="alert alert-info text-center">
-                        <p>No past events found.</p>
+                        <p>Ma'lumotlar mavjud emas.</p>
                     </div>
                 </div>
             {% endfor %}
         </div>
         <div class="text-center mt-4">
-            <a href="{% url 'event_list' %}" class="btn btn-primary">View All Events</a>
+            <a href="{% url 'event_list' %}" class="btn btn-primary">Barcha Tadbirlar</a>
         </div>
     </div>
 </section>
@@ -538,7 +538,7 @@
 <!-- Featured Artists -->
 <section class="py-5 bg-light">
     <div class="container">
-        <h2 class="section-title">Featured Artists</h2>
+        <h2 class="section-title">Sanʼatkorlar</h2>
         <div class="row">
             {% for artist in featured_artists|slice:":4" %}
                 <div class="col-md-3 mb-4">
@@ -558,22 +558,22 @@
                             <h5 class="mb-1"><a href="{% url 'artist_detail' artist.id %}" class="text-white text-decoration-none">{{ artist.name }}</a></h5>
                             <div class="d-flex align-items-center mb-2">
                                 <i class="fas fa-heart text-danger me-2"></i>
-                                <span>{{ artist.likes.count }} likes</span>
+                                <span>{{ artist.likes.count }} likelar</span>
                             </div>
-                            <a href="{% url 'artist_detail' artist.id %}" class="btn btn-sm btn-outline-light">View Profile</a>
+                            <a href="{% url 'artist_detail' artist.id %}" class="btn btn-sm btn-outline-light">Batafsil</a>
                         </div>
                     </div>
                 </div>
             {% empty %}
                 <div class="col-12">
                     <div class="alert alert-info text-center">
-                        <p>No featured artists found. Please check back later!</p>
+                        <p>Ma'lumotlar mavjud emas.</p>
                     </div>
                 </div>
             {% endfor %}
         </div>
         <div class="text-center mt-4">
-            <a href="{% url 'artist_list' %}" class="btn btn-primary">View All Artists</a>
+            <a href="{% url 'artist_list' %}" class="btn btn-primary">Barcha Sanʼatkorlar</a>
         </div>
     </div>
 </section>
@@ -581,7 +581,7 @@
 <!-- Latest Music -->
 <section class="py-5">
     <div class="container">
-        <h2 class="section-title">Latest Music</h2>
+        <h2 class="section-title">Ohirgi musiqalar</h2>
         <div class="row">
             {% for composition in latest_music %}
                 <div class="col-md-3 mb-4">
@@ -594,7 +594,7 @@
                         <div class="composition-overlay"></div>
                         
                         <div class="composition-type-badge">
-                            <i class="fas fa-music me-1"></i> Music
+                            <i class="fas fa-music me-1"></i> Musiqa
                         </div>
                         
                         <div class="composition-content">
@@ -631,7 +631,7 @@
                                     </div>
                                 {% elif composition.link %}
                                     <a href="{{ composition.link }}" target="_blank" class="btn btn-primary w-100">
-                                        <i class="fas fa-headphones me-2"></i> Listen
+                                        <i class="fas fa-headphones me-2"></i> Eshitish
                                     </a>
                                 {% endif %}
                             </div>
@@ -641,7 +641,7 @@
             {% empty %}
                 <div class="col-12">
                     <div class="alert alert-info text-center">
-                        <p>No music compositions found. Please check back later!</p>
+                        <p>Ma'lumotlar mavjud emas.</p>
                     </div>
                 </div>
             {% endfor %}
@@ -652,7 +652,7 @@
 <!-- Latest Videos -->
 <section class="py-5 bg-light">
     <div class="container">
-        <h2 class="section-title">Latest Videos</h2>
+        <h2 class="section-title">Ohirgi videolar</h2>
         <div class="row">
             {% for composition in latest_videos %}
                 <div class="col-md-3 mb-4">
@@ -690,7 +690,7 @@
             {% empty %}
                 <div class="col-12">
                     <div class="alert alert-info text-center">
-                        <p>No video compositions found. Please check back later!</p>
+                        <p>Ma'lumotlar mavjud emas.</p>
                     </div>
                 </div>
             {% endfor %}
@@ -704,8 +704,8 @@
         <div class="cta-section shadow-sm">
             <div class="row align-items-center">
                 <div class="col-md-8 px-5">
-                    <h2 class="mb-3">Experience the Rich Cultural Heritage of Uzbekistan</h2>
-                    <p class="lead mb-4">Discover performances, exhibitions, and cultural events showcasing the best artists across the country.</p>
+                    <h2 class="mb-3">O‘zbekistonning boy madaniy merosi bilan tanishing</h2>
+                    <p class="lead mb-4">Butun mamlakat bo'ylab eng yaxshi sanʼatkorlar namoyish etadigan spektakllar, ko'rgazmalar va madaniy tadbirlarni o'zingiz uchun kashf eting.</p>
                 </div>
                 <div class="col-md-4 text-center text-md-end px-5">
                     <a href="{% url 'event_list' %}" class="btn btn-primary btn-lg">Explore Now</a>
