@@ -716,14 +716,14 @@
                         <input type="hidden" name="artist_id" value="{{ artist.id }}">
                         <button type="button" class="like-btn">
                             <i class="{% if is_liked %}fas{% else %}far{% endif %} fa-heart"></i>
-                            <span class="like-count">{{ artist.likes.count }} Likes</span>
+                            <span class="like-count">{{ artist.likes.count }} Likelar</span>
                         </button>
                     </form>
                 </div>
                 
                 {% if artist.compositions.exists %}
                     <div class="badge bg-light text-primary px-3 py-2 fs-6">
-                        <i class="fas fa-music me-2"></i>{{ artist.compositions.count }} Compositions
+                        <i class="fas fa-music me-2"></i>{{ artist.compositions.count }} Kompozitsiyalar
                     </div>
                 {% endif %}
             </div>
@@ -737,7 +737,7 @@
             <!-- About Section -->
             <div class="card mb-5 shadow-sm">
                 <div class="card-body p-4 p-md-5">
-                    <h2 class="section-title">About the Artist</h2>
+                    <h2 class="section-title">Sanʼatkor haqida</h2>
                     <div class="mt-4">
                         {{ artist.description|safe }}
                     </div>
@@ -747,11 +747,11 @@
             <!-- Compositions Section (Combined Music and Videos) -->
             {% if music or videos %}
                 <div class="composition-section">
-                    <h2 class="section-title"><i class="fas fa-compact-disc me-2"></i>Compositions</h2>
+                    <h2 class="section-title"><i class="fas fa-compact-disc me-2"></i>Kompozitsiyalar</h2>
                     
                     <!-- Music Section -->
                     {% if music %}
-                        <h3 class="mt-5 mb-4 fw-bold"><i class="fas fa-music me-2"></i>Music</h3>
+                        <h3 class="mt-5 mb-4 fw-bold"><i class="fas fa-music me-2"></i>Musiqalar</h3>
                         <div id="musicCarousel" class="carousel slide" data-bs-ride="false">
                             <div class="carousel-inner">
                                 {% for batch_items in music|dictsortreversed:"created_at"|batch:3 %}
@@ -769,7 +769,7 @@
                                                         
                                                         
                                                         <div class="composition-type-badge">
-                                                            <i class="fas fa-music me-1"></i> Music
+                                                            <i class="fas fa-music me-1"></i> Musiqa
                                                         </div>
                                                         
                                                         <div class="composition-content">
@@ -802,7 +802,7 @@
                                                                     </div>
                                                                 {% elif composition.link %}
                                                                     <a href="{{ composition.link }}" target="_blank" class="btn btn-primary w-100">
-                                                                        <i class="fas fa-headphones me-2"></i> Listen
+                                                                        <i class="fas fa-headphones me-2"></i> Tinglash
                                                                     </a>
                                                                 {% endif %}
                                                             </div>
@@ -830,7 +830,7 @@
                     
                     <!-- Video Section -->
                     {% if videos %}
-                        <h3 class="mt-5 mb-4 fw-bold"><i class="fas fa-film me-2"></i>Videos</h3>
+                        <h3 class="mt-5 mb-4 fw-bold"><i class="fas fa-film me-2"></i>Videolar</h3>
                         <div id="videoCarousel" class="carousel slide" data-bs-ride="false">
                             <div class="carousel-inner">
                                 {% for batch_items in videos|dictsortreversed:"created_at"|batch:3 %}
@@ -877,7 +877,7 @@
                                                                             </span>
                                                                         {% else %}
                                                                             <span class="btn btn-danger w-100">
-                                                                                <i class="fas fa-film me-2"></i> Watch Video
+                                                                                <i class="fas fa-film me-2"></i> Videoni Tomosha qilish
                                                                             </span>
                                                                         {% endif %}
                                                                     {% endif %}
@@ -913,7 +913,7 @@
             {% if artist.events.exists %}
                 <div class="card mb-4 shadow-sm">
                     <div class="card-header bg-primary text-white py-3">
-                        <h5 class="mb-0"><i class="far fa-calendar-alt me-2"></i>Past Events</h5>
+                        <h5 class="mb-0"><i class="far fa-calendar-alt me-2"></i>Tadbirlar</h5>
                     </div>
                     <div class="card-body p-4">
                         {% for event in artist.events.all|dictsortreversed:"date"|slice:":5" %}
@@ -941,7 +941,7 @@
                         
                         {% if artist.events.count > 5 %}
                             <div class="text-center mt-3">
-                                <a href="{% url 'event_list' %}" class="btn btn-primary btn-sm">See All Events</a>
+                                <a href="{% url 'event_list' %}" class="btn btn-primary btn-sm">Barcha tadbirlar</a>
                             </div>
                         {% endif %}
                     </div>
@@ -987,7 +987,7 @@
             <div class="card shadow-sm">
                 <div class="card-body p-4 text-center">
                     <a href="{% url 'artist_list' %}" class="btn btn-outline-primary w-100">
-                        <i class="fas fa-arrow-left me-2"></i>Back to All Artists
+                        <i class="fas fa-arrow-left me-2"></i>Barcha Sanʼatkorlar
                     </a>
                 </div>
             </div>
@@ -1099,7 +1099,7 @@ $(document).ready(function() {
                 } else {
                     $('.like-btn i').removeClass('fas').addClass('far');
                 }
-                $('.like-count').text(data.like_count + ' Likes');
+                $('.like-count').text(data.like_count + ' Likelar');
             }
         });
     });
