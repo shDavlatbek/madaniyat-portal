@@ -2,9 +2,9 @@ from django.contrib import admin
 from .models import Event, Artist, Composition, Like
 
 
-class CompositionInline(admin.TabularInline):
+class CompositionInline(admin.StackedInline):
     model = Composition
-    extra = 1
+    extra = 0
 
 
 @admin.register(Artist)

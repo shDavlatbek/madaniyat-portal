@@ -456,7 +456,7 @@
                         <div class="hero-content">
                             <h1 class="mb-3"><a href="{% url 'event_detail' event.id %}" class="text-white text-decoration-none">{{ event.title }}</a></h1>
                             <p class="mb-4">{{ event.date|date:"F j, Y" }} • {{ event.location }}</p>
-                            <p class="mb-4">{{ event.description|striptags|truncatewords:25 }}</p>
+                            <p class="mb-4">{{ event.description|striptags|safe|truncatewords:25 }}</p>
                             <a href="{% url 'event_detail' event.id %}" class="btn btn-primary btn-lg">Batafsil</a>
                         </div>
                     </div>
@@ -516,7 +516,7 @@
                             <p class="card-text text-muted">
                                 <i class="fas fa-map-marker-alt me-2"></i>{{ event.location }}
                             </p>
-                            <p class="card-text">{{ event.description|striptags|truncatewords:15 }}</p>
+                            <p class="card-text">{{ event.description|striptags|safe|truncatewords:15 }}</p>
                             <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary">Batafsil</a>
                         </div>
                     </div>
@@ -662,6 +662,15 @@
                         {% else %}
                             <img src="{% static 'images/video-default-bg.svg' %}" data-fallback-src="{% static 'images/video-default-bg.jpg' %}" class="composition-bg" alt="{{ composition.title }}">
                         {% endif %}
+                        {% if composition.link and 'youtube' in composition.link or 'youtu.be' in composition.link %}
+                            <a href="{{ composition.link }}" data-fancybox="just-link" class="composition-wrapper d-none">
+                        {% elif composition.file %}
+                            <a href="{{ composition.file.url }}" class="composition-wrapper d-none">
+                        {% elif composition.link %}
+                            <a href="{{ composition.link }}" target="_blank" class="composition-wrapper d-none">
+                        {% else %}
+                            <a href="#" class="composition-wrapper d-none">
+                        {% endif %}
                         <a class="composition-overlay"></a>
                         
                         <div class="composition-type-badge video">
@@ -768,7 +777,7 @@ $(document).ready(function() {
     // Handle video thumbnails for YouTube links
     $('.composition-card').each(function() {
         const $card = $(this);
-        const $link = $card.find('a[data-fancybox="video-gallery"]');
+        const $link = $card.find('a[data-fancybox="just-link"]');
         
         if ($link.length) {
             const url = $link.attr('href');

@@ -64,8 +64,8 @@ class Event(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="O'zgartirilgan vaqt")
     is_featured = models.BooleanField(default=False)
-    latitude = models.FloatField(blank=True, null=True, verbose_name="Tadbir joylashgan joyning ko'rsatilgan ko'rinishdagi eni")
-    longitude = models.FloatField(blank=True, null=True, verbose_name="Tadbir joylashgan joyning ko'rsatilgan ko'rinishdagi g'o'ri")
+    latitude = models.FloatField(blank=True, null=True, verbose_name="Xaritada kenglik")
+    longitude = models.FloatField(blank=True, null=True, verbose_name="Xaritada uzunlik")
     
 
     def __str__(self):
