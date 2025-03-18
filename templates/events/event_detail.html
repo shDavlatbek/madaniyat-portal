@@ -20,6 +20,7 @@
   "image": "{% if event.image %}{{ request.scheme }}://{{ request.get_host }}{{ event.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/default-event-bg.jpg' %}{% endif %}",
   "startDate": "{{ event.date|date:'c' }}",
   "endDate": "{{ event.date|date:'c' }}",
+  "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'event_detail' event.slug %}",
   "location": {
     "@type": "Place",
     "name": "{{ event.location }}",
@@ -387,7 +388,7 @@
                     {% if event.artists.exists %}
                         {% for artist in event.artists.all %}
                             <div class="artist-card">
-                                <a href="{% url 'artist_detail' artist.id %}">
+                                <a href="{% url 'artist_detail' artist.slug %}">
                                 {% if artist.image %}
                                     <img src="{{ artist.image.url }}" class="artist-image" alt="{{ artist.name }}">
                                 {% else %}
@@ -397,7 +398,7 @@
                                 {% endif %}
                                 </a>
                                 <div class="artist-info">
-                                    <h6 class="artist-name"><a href="{% url 'artist_detail' artist.id %}" class="text-decoration-none">{{ artist.name }}</a></h6>
+                                    <h6 class="artist-name"><a href="{% url 'artist_detail' artist.slug %}" class="text-decoration-none">{{ artist.name }}</a></h6>
                                     <div class="d-flex align-items-center">
                                         <span class="badge bg-light text-primary me-2">
                                             <i class="fas fa-music me-1"></i> {{ artist.compositions.count }}
@@ -407,7 +408,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                <a href="{% url 'artist_detail' artist.id %}" class="btn btn-sm btn-outline-primary ms-auto">Batafsil</a>
+                                <a href="{% url 'artist_detail' artist.slug %}" class="btn btn-sm btn-outline-primary ms-auto">Batafsil</a>
                             </div>
                         {% endfor %}
                     {% else %}
@@ -458,7 +459,7 @@
                 <div class="col-md-4 mb-4 d-flex align-items-stretch">
                     <div class="card featured-card shadow h-100">
                         <div class="img-wrapper">
-                            <a href="{% url 'event_detail' event.id %}">
+                            <a href="{% url 'event_detail' event.slug %}">
                             {% if event.image %}
                                 <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title }}">
                             {% else %}
@@ -472,7 +473,7 @@
                         <div class="card-date">{{ event.date|date:"M j" }}</div>
                         <div class="card-body d-flex flex-column justify-content-between">
                             <div>
-                                <h5 class="card-title"><a href="{% url 'event_detail' event.id %}" class="text-decoration-none">{{ event.title }}</a></h5>
+                                <h5 class="card-title"><a href="{% url 'event_detail' event.slug %}" class="text-decoration-none">{{ event.title }}</a></h5>
                                 <p class="card-text text-muted">
                                     <i class="fas fa-map-marker-alt me-2"></i>{{ event.location }}
                                 </p>
@@ -483,7 +484,7 @@
                                         <span class="small text-muted me-2">Sanʼatkorlar:</span>
                                         <div class="d-flex">
                                             {% for artist in event.artists.all|slice:":3" %}
-                                                <a href="{% url 'artist_detail' artist.id %}" class="me-1" title="{{ artist.name }}">
+                                                <a href="{% url 'artist_detail' artist.slug %}" class="me-1" title="{{ artist.name }}">
                                                 {% if artist.image %}
                                                     <img src="{{ artist.image.url }}" alt="{{ artist.name }}" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover; border: 2px solid white;">
                                                 {% else %}
@@ -501,7 +502,7 @@
                                 {% endif %} {% endcomment %}
                             </div>
                             
-                            <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary mt-3">Batafsil</a>
+                            <a href="{% url 'event_detail' event.slug %}" class="btn btn-outline-primary mt-3">Batafsil</a>
                         </div>
                     </div>
                 </div>

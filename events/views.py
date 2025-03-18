@@ -88,9 +88,9 @@ def event_list(request):
     })
 
 
-def event_detail(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
-    events = Event.objects.all().exclude(id=event_id).order_by('-date')[:3]
+def event_detail(request, event_slug):
+    event = get_object_or_404(Event, slug=event_slug)
+    events = Event.objects.all().exclude(id=event.id).order_by('-date')[:3]
     return render(request, 'events/event_detail.html', {
         'event': event,
         'events': events,
@@ -129,8 +129,8 @@ def artist_list(request):
     })
 
 
-def artist_detail(request, artist_id):
-    artist = get_object_or_404(Artist, id=artist_id)
+def artist_detail(request, artist_slug):
+    artist = get_object_or_404(Artist, slug=artist_slug)
     
     # Get user or session-based likes
     is_liked = False
@@ -207,11 +207,11 @@ def toggle_like(request):
             'like_count': like_count,
         })
     else:
-        return HttpResponseRedirect(reverse('artist_detail', args=[artist.id]))
+        return HttpResponseRedirect(reverse('artist_detail', args=[artist.slug]))
 
 
-def composition_detail(request, composition_id):
-    composition = get_object_or_404(Composition, id=composition_id)
+def composition_detail(request, composition_slug):
+    composition = get_object_or_404(Composition, slug=composition_slug)
     
     return render(request, 'events/composition_detail.html', {
         'composition': composition,
@@ -267,4 +267,19 @@ def all_videos(request):
     
     return render(request, 'events/all_videos.html', {
         'videos': videos,
-    }) 
+    })
+
+# Redirect function for old URLs that use ID
+def event_detail_redirect(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    return redirect('event_detail', event_slug=event.slug)
+
+# Redirect function for old URLs that use ID
+def artist_detail_redirect(request, artist_id):
+    artist = get_object_or_404(Artist, id=artist_id)
+    return redirect('artist_detail', artist_slug=artist.slug)
+
+# Redirect function for old URLs that use ID
+def composition_detail_redirect(request, composition_id):
+    composition = get_object_or_404(Composition, id=composition_id)
+    return redirect('composition_detail', composition_slug=composition.slug) 

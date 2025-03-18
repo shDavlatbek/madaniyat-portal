@@ -14,7 +14,7 @@ class EventSitemap(Sitemap):
         return obj.updated_at if hasattr(obj, 'updated_at') else None
 
     def location(self, obj):
-        return reverse('event_detail', args=[obj.id])
+        return reverse('event_detail', args=[obj.slug])
 
 
 class ArtistSitemap(Sitemap):
@@ -28,7 +28,7 @@ class ArtistSitemap(Sitemap):
         return obj.updated_at if hasattr(obj, 'updated_at') else None
 
     def location(self, obj):
-        return reverse('artist_detail', args=[obj.id])
+        return reverse('artist_detail', args=[obj.slug])
 
 
 class CompositionSitemap(Sitemap):
@@ -42,7 +42,7 @@ class CompositionSitemap(Sitemap):
         return obj.created_at
 
     def location(self, obj):
-        return reverse('composition_detail', args=[obj.id])
+        return reverse('composition_detail', args=[obj.slug])
 
 
 class StaticSitemap(Sitemap):

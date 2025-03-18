@@ -19,9 +19,10 @@
   "name": "{{ artist.name }}",
   "description": "{{ artist.description|striptags }}",
   "image": "{% if artist.image %}{{ request.scheme }}://{{ request.get_host }}{{ artist.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/default-artist-bg.jpg' %}{% endif %}",
+  "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'artist_detail' artist.slug %}",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "{{ request.build_absolute_uri }}"
+    "@id": "{{ request.scheme }}://{{ request.get_host }}{% url 'artist_detail' artist.slug %}"
   },
   "sameAs": [
     {% if artist.facebook_link %}"{{ artist.facebook_link }}",{% endif %}
@@ -734,7 +735,7 @@
             
             <div class="artist-info">
                 <h1 class="artist-name">
-                    <a href="{% url 'artist_detail' artist.id %}" class="text-white text-decoration-none">
+                    <a href="{% url 'artist_detail' artist.slug %}" class="text-white text-decoration-none">
                         {{ artist.name }}
                     </a>
                 </h1>
@@ -742,7 +743,7 @@
                 <div class="like-container">
                     <form action="{% url 'toggle_like' %}" method="post" class="d-inline">
                         {% csrf_token %}
-                        <input type="hidden" name="artist_id" value="{{ artist.id }}">
+                        <input type="hidden" name="artist_id" value="{{ artist.slug }}">
                         <button type="button" class="like-btn">
                             <i class="{% if is_liked %}fas{% else %}far{% endif %} fa-heart"></i>
                             <span class="like-count">{{ artist.likes.count }} Likelar</span>
@@ -954,7 +955,7 @@
                                     </div>
                                     <div class="event-details">
                                         <h6 class="event-title">
-                                            <a href="{% url 'event_detail' event.id %}" class="text-decoration-none text-dark event-link">
+                                            <a href="{% url 'event_detail' event.slug %}" class="text-decoration-none text-dark event-link">
                                                 {{ event.title }}
                                             </a>
                                         </h6>
@@ -962,7 +963,7 @@
                                             <i class="fas fa-map-marker-alt"></i>
                                             <span>{{ event.location }}</span>
                                         </div>
-                                        <a href="{% url 'event_detail' event.id %}" class="btn btn-sm btn-outline-primary mt-2">Batafsil</a>
+                                        <a href="{% url 'event_detail' event.slug %}" class="btn btn-sm btn-outline-primary mt-2">Batafsil</a>
                                     </div>
                                 </div>
                             {% endif %}
