@@ -139,4 +139,66 @@ class Like(models.Model):
     
     def __str__(self):
         source = self.user.username if self.user else "Anonymous"
-        return f"{source} likes {self.artist.name}" 
+        return f"{source} likes {self.artist.name}"
+
+
+class SiteSettings(models.Model):
+    """Model to store site-wide settings including contact and footer information"""
+    site_name = models.CharField(max_length=255, default="Madaniyat Vazirligi", verbose_name="Sayt nomi")
+    contact_email = models.EmailField(verbose_name="Aloqa email", default="info@madaniyat.uz")
+    contact_phone = models.CharField(max_length=100, verbose_name="Telefon raqam", default="+998 71 123 4567")
+    contact_address = models.TextField(verbose_name="Manzil", default="100128, Toshkent, Oʻzbekiston")
+    
+    # Social media links
+    facebook_url = models.URLField(blank=True, null=True, verbose_name="Facebook URL")
+    instagram_url = models.URLField(blank=True, null=True, verbose_name="Instagram URL")
+    youtube_url = models.URLField(blank=True, null=True, verbose_name="YouTube URL")
+    twitter_url = models.URLField(blank=True, null=True, verbose_name="Twitter URL")
+    telegram_url = models.URLField(blank=True, null=True, verbose_name="Telegram URL")
+    
+    # Contact page content
+    contact_page_title = models.CharField(max_length=255, default="Biz bilan bog'lanish", verbose_name="Aloqa sahifa sarlavhasi")
+    contact_page_description = HTMLField(verbose_name="Aloqa sahifa mazmuni", blank=True)
+    google_maps_embed = models.TextField(verbose_name="Google Maps iframe kodi", blank=True, help_text="Google Maps-dan olingan joylashuv HTML kodi")
+    
+    # Additional footer information
+    footer_text = models.TextField(blank=True, verbose_name="Footer qo'shimcha matn")
+    
+    class Meta:
+        verbose_name = "Sayt sozlamalari"
+        verbose_name_plural = "Sayt sozlamalari"
+    
+    def __str__(self):
+        return "Sayt sozlamalari"
+    
+    @classmethod
+    def get_settings(cls):
+        """Returns the site settings, creating a default instance if none exists"""
+        settings, created = cls.objects.get_or_create(pk=1)
+        return settings
+
+
+class Murojat(models.Model):
+    """Model to store contact form submissions"""
+    STATUS_CHOICES = [
+        ('new', 'Yangi'),
+        ('processing', 'Ko\'rib chiqilmoqda'),
+        ('completed', 'Bajarildi'),
+        ('rejected', 'Rad etildi'),
+    ]
+    
+    name = models.CharField(max_length=255, verbose_name="F.I.Sh")
+    phone = models.CharField(max_length=20, verbose_name="Telefon raqami")
+    subject = models.CharField(max_length=255, blank=True, null=True, verbose_name="Mavzu")
+    message = models.TextField(verbose_name="Xabar")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yuborilgan vaqt")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name="Holati")
+    notes = models.TextField(blank=True, null=True, verbose_name="Admin izohlari")
+    
+    class Meta:
+        verbose_name = "Murojat"
+        verbose_name_plural = "Murojatlar"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.name} - {self.created_at.strftime('%d.%m.%Y %H:%M')}" 

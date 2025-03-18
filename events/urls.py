@@ -22,6 +22,9 @@ urlpatterns = [
     # Composition URL
     path('compositions/<slug:composition_slug>/', views.composition_detail, name='composition_detail'),
     
+    # Contact page
+    path('contact/', views.contact, name='contact'),
+    
     # Like functionality
     path('like/', views.toggle_like, name='toggle_like'),
     

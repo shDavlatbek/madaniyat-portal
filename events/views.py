@@ -3,10 +3,11 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.urls import reverse
-from .models import Event, Artist, Composition, Like
+from .models import Event, Artist, Composition, Like, SiteSettings, Murojat
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from django.contrib import messages
 
 
 def home(request):
@@ -282,4 +283,43 @@ def artist_detail_redirect(request, artist_id):
 # Redirect function for old URLs that use ID
 def composition_detail_redirect(request, composition_id):
     composition = get_object_or_404(Composition, id=composition_id)
-    return redirect('composition_detail', composition_slug=composition.slug) 
+    return redirect('composition_detail', composition_slug=composition.slug)
+
+def contact(request):
+    """View for the contact page with contact form"""
+    settings = SiteSettings.get_settings()
+    
+    if request.method == 'POST':
+        # Process form submission
+        name = request.POST.get('name', '')
+        phone = request.POST.get('phone', '')
+        subject = request.POST.get('subject', '')
+        message = request.POST.get('message', '')
+        
+        # Basic validation
+        if name and phone and message:
+            try:
+                # Save to database
+                murojat = Murojat(
+                    name=name,
+                    phone=phone,
+                    subject=subject,
+                    message=message
+                )
+                murojat.save()
+                
+                # Add success message
+                messages.success(request, "Xabaringiz muvaffaqiyatli yuborildi. Tez orada siz bilan bog'lanamiz.")
+                return redirect('contact')  # Redirect to clear the form
+            
+            except Exception as e:
+                # Log the error and show error message
+                print(f"Error saving contact form: {e}")
+                messages.error(request, "Xabar yuborishda xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.")
+        else:
+            # Form validation failed
+            messages.error(request, "Iltimos, barcha majburiy maydonlarni to'ldiring.")
+    
+    return render(request, 'events/contact.html', {
+        'settings': settings,
+    }) 

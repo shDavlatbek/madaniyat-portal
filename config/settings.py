@@ -69,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'events.context_processors.site_settings',
             ],
         },
     },
@@ -134,6 +135,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Email configuration
+# Using console backend for development
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# For production, use SMTP backend
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.example.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'youremail@example.com'
+# EMAIL_HOST_PASSWORD = 'yourpassword'
+# DEFAULT_FROM_EMAIL = 'Madaniyat Vazirligi <noreply@example.com>'
 
 # TINYMCE_JS_URL = "libs/tinymce/tinymce.min.js"
 
@@ -220,10 +233,16 @@ JAZZMIN_SETTINGS = {
 
     "copyright": "Madaniyat Vazirligi",
 
-    # "order_with_respect_to": [],
+    "order_with_respect_to": ['events.SiteSettings', 'events.Event', 'events.Artist', 'events.Composition', 'events.Murojat', 'events.Like'],
 
-    # "icons": {
-    # },
+    "icons": {
+        "events.SiteSettings": "fas fa-cog",
+        "events.Event": "fas fa-calendar-alt",
+        "events.Artist": "fas fa-user",
+        "events.Composition": "fas fa-music",
+        "events.Murojat": "fas fa-envelope",
+        "events.Like": "fas fa-heart",
+    },
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
     "related_modal_active": True,

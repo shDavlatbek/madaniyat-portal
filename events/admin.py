@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Event, Artist, Composition, Like
+from .models import Event, Artist, Composition, Like, SiteSettings, Murojat
 
 
 class CompositionInline(admin.StackedInline):
@@ -56,4 +56,58 @@ class LikeAdmin(admin.ModelAdmin):
     
     def get_source(self, obj):
         return obj.user.username if obj.user else f"Anonymous ({obj.session_key})"
-    get_source.short_description = "Liked by" 
+    get_source.short_description = "Liked by"
+
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Asosiy ma\'lumotlar', {
+            'fields': ('site_name', 'contact_email', 'contact_phone', 'contact_address')
+        }),
+        ('Ijtimoiy tarmoqlar', {
+            'fields': ('facebook_url', 'instagram_url', 'youtube_url', 'twitter_url', 'telegram_url')
+        }),
+        ('Aloqa sahifasi', {
+            'fields': ('contact_page_title', 'contact_page_description', 'google_maps_embed')
+        }),
+        ('Footer', {
+            'fields': ('footer_text',)
+        }),
+    )
+    
+    def has_add_permission(self, request):
+        # Check if a SiteSettings object already exists
+        if SiteSettings.objects.exists():
+            return False
+        return super().has_add_permission(request)
+    
+    def has_delete_permission(self, request, obj=None):
+        # Prevent deletion of the settings object
+        return False
+
+
+@admin.register(Murojat)
+class MurojatAdmin(admin.ModelAdmin):
+    list_display = ('name', 'phone', 'subject', 'created_at', 'status')
+    list_filter = ('status', 'created_at')
+    search_fields = ('name', 'phone', 'message')
+    readonly_fields = ('name', 'phone', 'subject', 'message', 'created_at')
+    fieldsets = (
+        ('Murojat ma\'lumotlari', {
+            'fields': ('name', 'phone', 'subject', 'message', 'created_at')
+        }),
+        ('Holati', {
+            'fields': ('status', 'notes')
+        }),
+    )
+    list_editable = ('status',)
+    date_hierarchy = 'created_at'
+    
+    def has_add_permission(self, request):
+        # Prevent adding contacts directly through admin
+        return False
+    
+    def has_delete_permission(self, request, obj=None):
+        # Allow deletion for superusers only
+        return request.user.is_superuser 
