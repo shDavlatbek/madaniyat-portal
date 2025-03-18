@@ -1,9 +1,12 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}O'zbekiston madaniyat vazirligi rasmiy portali - madaniy tadbirlar, sanʼatkorlar va konsert-tomosha faoliyati haqida maʼlumot{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}madaniyat, tadbirlar, sanʼatkorlar, O'zbekiston, konsert, tomosha, musiqa, video{% endblock %}">
+    <meta name="author" content="O'zbekiston Madaniyat Vazirligi">
     <title>{% block title %}Madaniyat Vazirligi - Madaniy tadbirlar va Sanʼatkorlar portali{% endblock %}</title>
     <link rel="shortcut icon" type="image/png" href="{% static 'images/logos/logo.png' %}" />
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
@@ -11,6 +14,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Fancybox CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+    
+    <!-- Canonical Link -->
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    
+    <!-- Open Graph Meta Tags for social sharing -->
+    <meta property="og:title" content="{% block og_title %}{{ self.title }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ self.meta_description }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logos/logo.png' %}{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Madaniyat Vazirligi">
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ self.og_title }}">
+    <meta name="twitter:description" content="{{ self.og_description }}">
+    <meta name="twitter:image" content="{{ self.og_image }}">
+    
+    <!-- Structured Data for Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "O'zbekiston Madaniyat Vazirligi",
+      "url": "{{ request.scheme }}://{{ request.get_host }}",
+      "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/logos/logo.png' %}",
+      "sameAs": [
+        "https://www.facebook.com/madaniyatvazirligiuz",
+        "https://www.instagram.com/madaniyatvazirligi",
+        "https://t.me/madaniyatvazirligi"
+      ]
+    }
+    </script>
+    
+    {% block structured_data %}{% endblock %}
+    
     <style>
         :root {
             --primary-color: #0d6efd;

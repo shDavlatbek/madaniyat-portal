@@ -3,8 +3,31 @@
 
 {% block title %}Madaniyat Vazirligi - Madaniy tadbirlar va Sanʼatkorlar portali{% endblock %}
 
+{% block meta_description %}O'zbekiston Madaniyat vazirligi rasmiy portali - sanʼatkorlar, konsert-tomosha, madaniy tadbirlar, musiqalar va videolar haqida ma'lumot{% endblock %}
+{% block meta_keywords %}madaniyat, O'zbekiston madaniyati, sanʼatkorlar, madaniy tadbirlar, konsert, tomosha{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "O'zbekiston Madaniyat Vazirligi",
+  "url": "{{ request.scheme }}://{{ request.get_host }}",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "{{ request.scheme }}://{{ request.get_host }}/events/?search={search_term_string}",
+    "query-input": "required name=search_term_string"
+  },
+  "description": "O'zbekiston Madaniyat vazirligi rasmiy portali - sanʼatkorlar, konsert-tomosha, madaniy tadbirlar, musiqalar va videolar haqida ma'lumot"
+}
+</script>
+{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/custom-music-player.css' %}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<link href="https://cdn.maptiler.com/maptiler-sdk-js/v3.0.1/maptiler-sdk.css" rel="stylesheet" />
 <style>
     /* Hero slider */
     .hero-slider {
@@ -436,6 +459,38 @@
         border-bottom: 8px solid transparent;
         border-right: 8px solid #ff0000;
     }
+    
+    /* Map styles */
+    .events-list {
+        scrollbar-width: thin;
+    }
+    
+    .event-item {
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .event-item:hover, .event-item.active {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+    
+    .leaflet-popup-content-wrapper {
+        border-radius: 8px;
+    }
+    
+    .leaflet-popup-content {
+        margin: 12px 16px;
+    }
+    
+    .event-marker-popup h6 {
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    
+    .event-marker-popup p {
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
 </style>
 {% endblock %}
 
@@ -713,17 +768,53 @@
     </div>
 </section>
 
-<!-- Call to Action -->
-<section class="py-5">
-    <div class="container">
-        <div class="cta-section shadow-sm">
-            <div class="row align-items-center">
-                <div class="col-md-8 px-5">
-                    <h2 class="mb-3">O‘zbekistonning boy madaniy merosi bilan tanishing</h2>
-                    <p class="lead mb-4">Butun mamlakat bo'ylab eng yaxshi sanʼatkorlar namoyish etadigan spektakllar, ko'rgazmalar va madaniy tadbirlarni o'zingiz uchun kashf eting.</p>
+<!-- Events Map Section -->
+<section class="py-5 bg-light">
+    <div class="container-fluid px-4">
+        <h2 class="section-title ms-2">Tadbirlar xaritasi</h2>
+        <div class="row">
+            <!-- Events List -->
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Tadbirlar</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="events-list" style="height: 500px; overflow-y: auto;">
+                            <ul class="list-group list-group-flush" id="events-list">
+                                {% for event in all_events %}
+                                    <li class="list-group-item event-item" 
+                                        data-event-id="{{ event.id }}" 
+                                        data-lat="{{ event.latitude|default:'41.2995' }}" 
+                                        data-lng="{{ event.longitude|default:'69.2401' }}">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">{{ event.title }}</h6>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-calendar-alt me-1"></i> {{ event.date|date:"F j, Y" }}
+                                                </small><br>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-map-marker-alt me-1"></i> {{ event.location }}
+                                                </small>
+                                            </div>
+                                            <a href="{% url 'event_detail' event.id %}" class="btn btn-sm btn-outline-primary">Batafsil</a>
+                                        </div>
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item text-center">Ma'lumotlar mavjud emas</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4 text-center text-md-end px-5">
-                    <a href="{% url 'event_list' %}" class="btn btn-primary btn-lg">Batafsil</a>
+            </div>
+            
+            <!-- Map Container -->
+            <div class="col-md-9">
+                <div class="card shadow-sm">
+                    <div class="card-body p-0">
+                        <div id="events-map" style="height: 550px;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -734,6 +825,9 @@
 {% block extra_js %}
 <script src="{% static 'js/custom-music-player.js' %}"></script>
 <script src="{% static 'js/dynamic-backgrounds.js' %}"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.maptiler.com/maptiler-sdk-js/v3.0.1/maptiler-sdk.umd.min.js"></script>
+<script src="https://cdn.maptiler.com/leaflet-maptilersdk/v4.0.2/leaflet-maptilersdk.umd.min.js"></script>
 <script>
 $(document).ready(function() {
     // Initialize Fancybox for videos
@@ -845,6 +939,101 @@ $(document).ready(function() {
             });
         }
     });
+
+    // Map initialization
+    function initMap() {
+        // Create map instance
+        const map = L.map('events-map').setView([41.2995, 69.2401], 6); // Default center on Tashkent
+        
+        const key = 'XcL6b3Sx0AnqO90X2oUF';
+        L.maptiler.maptilerLayer({
+            apiKey: key,
+            style: "https://api.maptiler.com/maps/streets-v2/style.json?key=XcL6b3Sx0AnqO90X2oUF",
+        }).addTo(map);
+        
+        // Object to store markers by event ID
+        const eventMarkers = {};
+        const markerBounds = L.latLngBounds();
+        
+        // Add markers for each event
+        $('.event-item').each(function() {
+            const $event = $(this);
+            const eventId = $event.data('event-id');
+            const lat = parseFloat($event.data('lat'));
+            const lng = parseFloat($event.data('lng'));
+            const title = $event.find('h6').text();
+            const date = $event.find('small').first().text().trim();
+            const location = $event.find('small').last().text().trim();
+            const detailUrl = $event.find('a').attr('href');
+            
+            // Check if we have valid coordinates
+            if (!isNaN(lat) && !isNaN(lng)) {
+                // Create marker
+                const marker = L.marker([lat, lng]).addTo(map);
+                
+                // Create popup content
+                const popupContent = `
+                    <div class="event-marker-popup">
+                        <h6>${title}</h6>
+                        <p>${date}</p>
+                        <p>${location}</p>
+                        <a href="${detailUrl}" class="btn btn-sm btn-primary text-white w-100">Batafsil</a>
+                    </div>
+                `;
+                
+                // Bind popup to marker
+                marker.bindPopup(popupContent);
+                
+                // Store marker by event ID
+                eventMarkers[eventId] = marker;
+                
+                // Add coordinates to bounds
+                markerBounds.extend([lat, lng]);
+            }
+        });
+        
+        // If we have markers, fit the map to the bounds
+        if (markerBounds.isValid()) {
+            map.fitBounds(markerBounds, { padding: [50, 50] });
+        }
+        
+        // Event handler for clicking on event in the list
+        $('.event-item').on('click', function() {
+            const $event = $(this);
+            const eventId = $event.data('event-id');
+            const lat = parseFloat($event.data('lat'));
+            const lng = parseFloat($event.data('lng'));
+            
+            // Highlight the clicked event in the list
+            $('.event-item').removeClass('active');
+            $event.addClass('active');
+            
+            // If marker exists, fly to it and open popup
+            if (eventMarkers[eventId]) {
+                // Create a small bounds around the marker
+                const bounds = L.latLngBounds(
+                    [lat - 0.01, lng - 0.01],
+                    [lat + 0.01, lng + 0.01]
+                );
+                
+                // Fly to bounds with animation
+                map.flyToBounds(bounds, {
+                    padding: [50, 50],
+                    duration: 1
+                });
+                
+                // Open the popup after a short delay to let the animation finish
+                setTimeout(() => {
+                    eventMarkers[eventId].openPopup();
+                }, 1000);
+            }
+        });
+    }
+    
+    // Initialize map when the page is loaded
+    if ($('#events-map').length) {
+        initMap();
+    }
 });
 </script>
 {% endblock %} 

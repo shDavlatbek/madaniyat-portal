@@ -3,6 +3,40 @@
 {% load float_fix %}
 {% block title %}{{ event.title }} | Madaniyat Vazirligi{% endblock %}
 
+{% block meta_description %}{{ event.description|striptags|truncatewords:30 }}{% endblock %}
+{% block meta_keywords %}{{ event.title }}, {{ event.location }}, madaniy tadbir, O'zbekiston{% endblock %}
+
+{% block og_title %}{{ event.title }} | Madaniyat Vazirligi{% endblock %}
+{% block og_description %}{{ event.description|striptags|truncatewords:30 }}{% endblock %}
+{% block og_image %}{% if event.image %}{{ request.scheme }}://{{ request.get_host }}{{ event.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/default-event-bg.jpg' %}{% endif %}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "{{ event.title }}",
+  "description": "{{ event.description|striptags }}",
+  "image": "{% if event.image %}{{ request.scheme }}://{{ request.get_host }}{{ event.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/default-event-bg.jpg' %}{% endif %}",
+  "startDate": "{{ event.date|date:'c' }}",
+  "endDate": "{{ event.date|date:'c' }}",
+  "location": {
+    "@type": "Place",
+    "name": "{{ event.location }}",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "{{ event.location }}"
+    }
+  },
+  "organizer": {
+    "@type": "Organization",
+    "name": "O'zbekiston Madaniyat Vazirligi",
+    "url": "{{ request.scheme }}://{{ request.get_host }}"
+  }
+}
+</script>
+{% endblock %}
+
 {% block extra_css %}
 <style>
     .event-header {

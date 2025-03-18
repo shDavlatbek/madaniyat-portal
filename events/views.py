@@ -23,7 +23,7 @@ def home(request):
     
     # Get past events for the events section
     past_events = Event.objects.all().order_by('-date')[:3]
-    
+    all_events = Event.objects.all().order_by('-date')
     # Get featured artists (or artists with most likes if no featured ones)
     featured_artists = list(Artist.objects.filter(is_featured=True)[:4])
     
@@ -51,6 +51,7 @@ def home(request):
         'featured_artists': featured_artists,
         'latest_music': latest_music,
         'latest_videos': latest_videos,
+        'all_events': all_events,
     })
 
 

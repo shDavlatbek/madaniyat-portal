@@ -4,6 +4,35 @@
 
 {% block title %}{{ artist.name }} | Madaniyat Vazirligi{% endblock %}
 
+{% block meta_description %}{{ artist.description|striptags|truncatewords:30 }}{% endblock %}
+{% block meta_keywords %}{{ artist.name }}, san'atkor, O'zbekiston, musiqa, san'at{% endblock %}
+
+{% block og_title %}{{ artist.name }} | Madaniyat Vazirligi{% endblock %}
+{% block og_description %}{{ artist.description|striptags|truncatewords:30 }}{% endblock %}
+{% block og_image %}{% if artist.image %}{{ request.scheme }}://{{ request.get_host }}{{ artist.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/default-artist-bg.jpg' %}{% endif %}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "{{ artist.name }}",
+  "description": "{{ artist.description|striptags }}",
+  "image": "{% if artist.image %}{{ request.scheme }}://{{ request.get_host }}{{ artist.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/default-artist-bg.jpg' %}{% endif %}",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ request.build_absolute_uri }}"
+  },
+  "sameAs": [
+    {% if artist.facebook_link %}"{{ artist.facebook_link }}",{% endif %}
+    {% if artist.instagram_link %}"{{ artist.instagram_link }}",{% endif %}
+    {% if artist.twitter_link %}"{{ artist.twitter_link }}",{% endif %}
+    {% if artist.youtube_link %}"{{ artist.youtube_link }}"{% endif %}
+  ]
+}
+</script>
+{% endblock %}
+
 {% block extra_css %}
 <style>
     .artist-header {

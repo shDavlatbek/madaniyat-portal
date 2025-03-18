@@ -18,13 +18,38 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView, TemplateView
+from django.contrib.sitemaps.views import sitemap
+from events.sitemaps import EventSitemap, ArtistSitemap, CompositionSitemap, StaticSitemap
+from django.http import HttpResponse
+
+# Define the sitemaps dictionary
+sitemaps = {
+    'events': EventSitemap,
+    'artists': ArtistSitemap,
+    'compositions': CompositionSitemap,
+    'static': StaticSitemap,
+}
+
+# Define the robots.txt content
+def robots_txt(request):
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+        "Disallow: /admin/",
+        f"Sitemap: {request.build_absolute_uri('/sitemap.xml')}"
+    ]
+    return HttpResponse("\n".join(lines), content_type="text/plain")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', RedirectView.as_view(pattern_name='event_list'), name='home'),
     path('', include('events.urls')),
     path('tinymce/', include('tinymce.urls')),
+    
+    # SEO - Sitemap and robots.txt
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('robots.txt', robots_txt, name='robots_txt'),
 ]
 
 # Serve media files in development
