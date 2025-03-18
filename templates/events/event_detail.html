@@ -175,6 +175,44 @@
         background-color: var(--primary-color);
     }
     
+    /* Featured card styles for event list */
+    .featured-card {
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: none;
+        margin-bottom: 30px;
+    }
+    
+    .featured-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .featured-card .card-img-top {
+        height: 250px;
+        object-fit: cover;
+        transition: all 0.5s ease;
+    }
+    
+    .featured-card:hover .card-img-top {
+        transform: scale(1.1);
+    }
+    
+    .featured-card .img-wrapper {
+        overflow: hidden;
+    }
+    
+    .featured-card .card-date {
+        background-color: #0d6efd;
+        color: white;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-weight: 600;
+    }
+    
     @media (max-width: 768px) {
         .event-title {
             font-size: 2rem;
@@ -376,5 +414,68 @@
             </div>
         </div>
     </div>
+
+    {% if events %}
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <h2 class="related-events-title">O'xshash tadbirlar</h2>
+            </div>
+            {% for event in events %}
+                <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                    <div class="card featured-card shadow h-100">
+                        <div class="img-wrapper">
+                            <a href="{% url 'event_detail' event.id %}">
+                            {% if event.image %}
+                                <img src="{{ event.image.url }}" class="card-img-top" alt="{{ event.title }}">
+                            {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center" 
+                                     style="height: 250px;">
+                                    <i class="fas fa-calendar-alt fa-4x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            </a>
+                        </div>
+                        <div class="card-date">{{ event.date|date:"M j" }}</div>
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <div>
+                                <h5 class="card-title"><a href="{% url 'event_detail' event.id %}" class="text-decoration-none">{{ event.title }}</a></h5>
+                                <p class="card-text text-muted">
+                                    <i class="fas fa-map-marker-alt me-2"></i>{{ event.location }}
+                                </p>
+                                <p class="card-text">{{ event.description|striptags|safe|truncatewords:15 }}</p>
+                                
+                                {% comment %} {% if event.artists.exists %}
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="small text-muted me-2">Sanʼatkorlar:</span>
+                                        <div class="d-flex">
+                                            {% for artist in event.artists.all|slice:":3" %}
+                                                <a href="{% url 'artist_detail' artist.id %}" class="me-1" title="{{ artist.name }}">
+                                                {% if artist.image %}
+                                                    <img src="{{ artist.image.url }}" alt="{{ artist.name }}" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover; border: 2px solid white;">
+                                                {% else %}
+                                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; border: 2px solid white;">
+                                                        <i class="fas fa-user fa-sm text-white"></i>
+                                                    </div>
+                                                {% endif %}
+                                                </a>
+                                            {% endfor %}
+                                            {% if event.artists.count > 3 %}
+                                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" style="width: 30px; height: 30px; font-size: 0.7rem;">+{{ event.artists.count|add:"-3" }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %} {% endcomment %}
+                            </div>
+                            
+                            <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary mt-3">Batafsil</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        
+    {% endif %}
+
 </div>
 {% endblock %} 

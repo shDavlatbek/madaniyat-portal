@@ -581,7 +581,7 @@
 <!-- Latest Music -->
 <section class="py-5">
     <div class="container">
-        <h2 class="section-title">Ohirgi musiqalar</h2>
+        <h2 class="section-title">Musiqalar</h2>
         <div class="row">
             {% for composition in latest_music %}
                 <div class="col-md-3 mb-4">
@@ -646,13 +646,16 @@
                 </div>
             {% endfor %}
         </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'all_music' %}" class="btn btn-primary">Barcha Musiqalar</a>
+        </div>
     </div>
 </section>
 
 <!-- Latest Videos -->
 <section class="py-5 bg-light">
     <div class="container">
-        <h2 class="section-title">Ohirgi videolar</h2>
+        <h2 class="section-title">Videolar</h2>
         <div class="row">
             {% for composition in latest_videos %}
                 <div class="col-md-3 mb-4">
@@ -703,6 +706,9 @@
                     </div>
                 </div>
             {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'all_videos' %}" class="btn btn-primary">Barcha Videolar</a>
         </div>
     </div>
 </section>

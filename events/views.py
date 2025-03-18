@@ -89,8 +89,10 @@ def event_list(request):
 
 def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
+    events = Event.objects.all().exclude(id=event_id).order_by('-date')[:3]
     return render(request, 'events/event_detail.html', {
         'event': event,
+        'events': events,
     })
 
 
@@ -212,4 +214,56 @@ def composition_detail(request, composition_id):
     
     return render(request, 'events/composition_detail.html', {
         'composition': composition,
+    })
+
+def media_list(request):
+    """View for showing all compositions (both music and videos)"""
+    # Get search query from URL parameter
+    search_query = request.GET.get('search', '')
+    
+    # Filter compositions based on search query
+    if search_query:
+        compositions = Composition.objects.filter(
+            Q(title__icontains=search_query) | 
+            Q(description__icontains=search_query) |
+            Q(artist__name__icontains=search_query)
+        ).order_by('-created_at')
+    else:
+        compositions = Composition.objects.all().order_by('-created_at')
+    
+    # Set up pagination - 12 compositions per page
+    paginator = Paginator(compositions, 12)
+    page = request.GET.get('page')
+    
+    try:
+        compositions_paginated = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page
+        compositions_paginated = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range, deliver last page of results
+        compositions_paginated = paginator.page(paginator.num_pages)
+    
+    return render(request, 'events/media_list.html', {
+        'compositions': compositions_paginated,
+        'search_query': search_query,
+    })
+
+def all_music(request):
+    """View for showing all music compositions"""
+    # Get all music compositions without pagination or search filtering
+    all_music = Composition.objects.filter(type='music').order_by('-created_at')
+    
+    return render(request, 'events/all_music.html', {
+        'music': all_music,
+        'all_music': all_music,
+    })
+
+def all_videos(request):
+    """View for showing all video compositions"""
+    # Get all video compositions without pagination or search filtering
+    videos = Composition.objects.filter(type='video').order_by('-created_at')
+    
+    return render(request, 'events/all_videos.html', {
+        'videos': videos,
     }) 

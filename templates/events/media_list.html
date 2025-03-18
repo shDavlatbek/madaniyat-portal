@@ -1,0 +1,565 @@
+{% extends 'events/base.html' %}
+{% load static %}
+
+{% block title %}Media | Madaniyat Vazirligi{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-banner {
+        background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('{% static "images/media-banner.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        position: relative;
+    }
+    
+    .page-banner h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    /* Enhanced Composition Card */
+    .composition-card {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        height: 350px;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        transform-origin: center bottom;
+        cursor: pointer;
+    }
+    
+    .composition-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        z-index: 10;
+    }
+    
+    .composition-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+        opacity: 0.85;
+        transition: all 0.5s;
+    }
+    
+    .composition-card:hover .composition-bg {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
+    
+    .composition-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+        z-index: 2;
+    }
+    
+    .composition-type-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 3;
+        background-color: var(--primary-color, #0d6efd);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+    
+    .composition-type-badge.video {
+        background-color: #ff4d4d;
+    }
+    
+    .composition-content {
+        position: relative;
+        z-index: 3;
+        padding: 20px;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: flex-end;
+    }
+    
+    .composition-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 1.3rem;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+    
+    .composition-controls {
+        width: 100%;
+        background-color: rgba(0,0,0,0.4);
+        border-radius: 10px;
+        padding: 15px;
+    }
+    
+    /* Custom Music Player */
+    .music-player-custom {
+        position: relative;
+        width: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 10px;
+    }
+    
+    .music-player-custom .play-pause-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--primary-color, #0d6efd);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+        border: none;
+        outline: none;
+    }
+    
+    .music-player-custom .play-pause-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    .music-player-custom .play-pause-btn i {
+        font-size: 1rem;
+    }
+    
+    .music-player-custom .controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    
+    .music-player-custom .progress-area {
+        height: 6px;
+        width: 100%;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .music-player-custom .progress-area .progress-bar {
+        height: 100%;
+        width: 0%;
+        position: relative;
+        border-radius: 50px;
+        background: linear-gradient(90deg, #1DB954, #56D47E);
+        transition: width 0.1s linear;
+    }
+    
+    .music-player-custom .progress-area .progress-bar::before {
+        content: "";
+        position: absolute;
+        height: 12px;
+        width: 12px;
+        border-radius: 50%;
+        top: 50%;
+        right: -5px;
+        transform: translateY(-50%);
+        background: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .music-player-custom .progress-area:hover .progress-bar::before {
+        opacity: 1;
+    }
+    
+    .music-player-custom .timer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 2px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.75rem;
+    }
+    
+    .music-player-custom .volume-container {
+        display: flex;
+        align-items: center;
+        margin-left: 15px;
+    }
+    
+    .music-player-custom .volume-icon {
+        color: white;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-right: 8px;
+    }
+    
+    .music-player-custom .volume-slider {
+        width: 60px;
+        height: 4px;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .music-player-custom .volume-slider .volume-progress {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.7);
+    }
+    
+    /* Hide the default audio player */
+    .music-player-custom audio {
+        display: none;
+    }
+    
+    /* Play button animation */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .play-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--primary-color, #0d6efd);
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        margin: 0 auto;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        cursor: pointer;
+        border: none;
+        z-index: 5;
+    }
+    
+    .play-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        animation: pulse 1.5s infinite;
+    }
+    
+    .play-btn.video {
+        background-color: #ff4d4d;
+    }
+    
+    .composition-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: block;
+        z-index: 3;
+        text-decoration: none;
+        color: white;
+    }
+    
+    .composition-wrapper:hover {
+        text-decoration: none;
+        color: white;
+    }
+    
+    /* Pagination */
+    .pagination .page-item .page-link {
+        border-radius: 50%;
+        margin: 0 5px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    /* Tabs */
+    .media-tabs .nav-link {
+        font-weight: 600;
+        padding: 12px 25px;
+        border-radius: 10px;
+        transition: all 0.3s;
+        margin: 0 5px;
+    }
+    
+    .media-tabs .nav-link.active {
+        background-color: var(--primary-color);
+        color: white !important;
+    }
+    
+    .media-tabs .nav-link:not(.active):hover {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Banner -->
+<div class="page-banner mb-5">
+    <div class="container text-center">
+        <h1 class="text-white">Media</h1>
+        <p class="lead">Musiqalar va videolar to'plami</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <!-- Search and Tabs Area -->
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+                        <div class="mb-3 mb-md-0">
+                            <h5 class="mb-0">Media</h5>
+                        </div>
+                        <div>
+                            <form action="{% url 'media_list' %}" method="get" class="d-flex">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Media qidirish..." name="search" value="{{ search_query }}" aria-label="Media qidirish">
+                                    <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+                                </div>
+                                {% if search_query %}
+                                    <a href="{% url 'media_list' %}" class="btn btn-outline-secondary ms-2">Tozalash</a>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <ul class="nav nav-pills media-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'media_list' %}">Hammasi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'all_music' %}">Musiqalar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'all_videos' %}">Videolar</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if compositions %}
+        <div class="row">
+            {% for composition in compositions %}
+                <div class="col-md-3 mb-4">
+                    <div class="composition-card">
+                        {% if composition.cover_image %}
+                            <img src="{{ composition.cover_image.url }}" class="composition-bg" alt="{{ composition.title }}">
+                        {% else %}
+                            {% if composition.type == 'music' %}
+                                <img src="{% static 'images/music-default-bg.jpg' %}" class="composition-bg" alt="{{ composition.title }}">
+                            {% else %}
+                                <img src="{% static 'images/video-default-bg.jpg' %}" class="composition-bg" alt="{{ composition.title }}">
+                            {% endif %}
+                        {% endif %}
+                        
+                        <div class="composition-overlay"></div>
+
+                        {% if composition.type == 'video' %}
+                            {% if composition.link and 'youtube' in composition.link or 'youtu.be' in composition.link %}
+                                <a href="{{ composition.link }}" data-fancybox="video-gallery" class="composition-wrapper">
+                            {% elif composition.file %}
+                                <a href="{{ composition.file.url }}" data-fancybox="video-gallery" class="composition-wrapper">
+                            {% elif composition.link %}
+                                <a href="{{ composition.link }}" target="_blank" class="composition-wrapper">
+                            {% else %}
+                                <a href="javascript:void(0)" class="composition-wrapper">
+                            {% endif %}
+                        {% else %}
+                            <a href="javascript:void(0)" class="composition-wrapper">
+                        {% endif %}
+                        
+                        
+                        
+                        <div class="composition-type-badge {% if composition.type == 'video' %}video{% endif %}">
+                            {% if composition.type == 'music' %}
+                                <i class="fas fa-music me-1"></i> Musiqa
+                            {% else %}
+                                <i class="fas fa-film me-1"></i> Video
+                            {% endif %}
+                        </div>
+                        
+                        <div class="composition-content">
+                            <h5 class="composition-title text-white">
+                                {{ composition.title }}
+                            </h5>
+                            <p class="text-white-50 mb-2">
+                                
+                                <a href="{% url 'artist_detail' composition.artist.id %}" class="text-white-50 text-decoration-none"><i class="fas fa-user me-2"></i>{{ composition.artist.name }}</a>
+                            </p>
+                            
+                            <div class="composition-controls">
+                                {% if composition.type == 'music' %}
+                                    {% if composition.file %}
+                                        <div class="music-player-custom" data-audio-src="{{ composition.file.url }}" data-composition-id="{{ composition.id }}">
+                                            <div class="controls">
+                                                <button type="button" class="play-pause-btn">
+                                                    <i class="fas fa-play"></i>
+                                                </button>
+                                                <div class="volume-container">
+                                                    <i class="fas fa-volume-up volume-icon"></i>
+                                                    <div class="volume-slider">
+                                                        <div class="volume-progress"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="progress-area">
+                                                <div class="progress-bar"></div>
+                                            </div>
+                                            <div class="timer">
+                                                <span class="current">0:00</span>
+                                                <span class="duration">0:00</span>
+                                            </div>
+                                            <audio class="main-audio" src="{{ composition.file.url }}"></audio>
+                                        </div>
+                                    {% elif composition.link %}
+                                        <a href="{{ composition.link }}" target="_blank" class="btn btn-primary w-100">
+                                            <i class="fas fa-headphones me-2"></i> Eshitish
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="play-btn video">
+                                        <i class="fas fa-play"></i>
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if composition.type == 'video' %}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if compositions.has_other_pages %}
+            <div class="d-flex justify-content-center mt-5">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if compositions.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ compositions.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Previous">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fas fa-chevron-left"></i></a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in compositions.paginator.page_range %}
+                            {% if compositions.number == num %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                            {% elif num > compositions.number|add:'-3' and num < compositions.number|add:'3' %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if compositions.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ compositions.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" aria-label="Next">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fas fa-chevron-right"></i></a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info text-center py-5">
+            <i class="fas fa-info-circle fa-3x mb-3"></i>
+            <h4>Ma'lumotlar mavjud emas.</h4>
+            {% if search_query %}
+                <p>"{{ search_query }}" ga mos keladigan media topilmadi. Boshqa qidiruv soʻzini sinab koʻring.</p>
+                <a href="{% url 'media_list' %}" class="btn btn-primary mt-3">Barcha Media</a>
+            {% else %}
+                <p>Ma'lumotlar mavjud emas.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/custom-music-player.js' %}"></script>
+<script>
+$(document).ready(function() {
+    // Initialize Fancybox for videos if available
+    try {
+        Fancybox.bind("[data-fancybox]", {
+            // Video options
+            youtube: {
+                controls: 1,
+                rel: 0,
+                autoplay: 1
+            },
+            // UI customization
+            Toolbar: {
+                display: [
+                    { id: "counter", position: "left" },
+                    "slideshow",
+                    "fullscreen",
+                    "close"
+                ]
+            },
+            // Animation
+            animated: true,
+            dragToClose: false,
+            // Appearance
+            showClass: "fancybox-zoomIn",
+            hideClass: "fancybox-zoomOut",
+            // Caption
+            caption: function (fancybox, slide) {
+                const composition = $(slide.triggerEl).closest('.composition-card').find('.composition-title').text().trim();
+                const artist = $(slide.triggerEl).closest('.composition-card').find('p a').text().trim();
+                return composition + " - " + artist;
+            }
+        });
+    } catch (e) {
+        console.error("Error initializing Fancybox:", e);
+    }
+});
+</script>
+{% endblock %} 

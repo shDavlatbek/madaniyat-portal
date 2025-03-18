@@ -1,0 +1,783 @@
+{% extends 'events/base.html' %}
+{% load static %}
+
+{% block title %}Musiqalar | Madaniyat Vazirligi{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-banner {
+        background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('{% static "images/music-banner.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        position: relative;
+    }
+    
+    .page-banner h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    /* Music List Styling */
+    .music-list-container {
+        scrollbar-width: thin;
+        scrollbar-color: #0d6efd #f0f0f0;
+    }
+    
+    .music-list-container::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .music-list-container::-webkit-scrollbar-track {
+        background: #f0f0f0;
+        border-radius: 10px;
+    }
+    
+    .music-list-container::-webkit-scrollbar-thumb {
+        background: #0d6efd;
+        border-radius: 10px;
+    }
+    
+    .music-list-item {
+        transition: all 0.2s ease;
+        border-left: 4px solid transparent;
+        padding: 15px;
+    }
+    
+    .music-list-item:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+    
+    .music-list-item.playing {
+        background-color: rgba(13, 110, 253, 0.1);
+        border-left-color: #0d6efd;
+    }
+    
+    .music-list-item .btn {
+        opacity: 0.7;
+        transition: all 0.2s ease;
+    }
+    
+    .music-list-item:hover .btn {
+        opacity: 1;
+    }
+    
+    .music-list-item.playing .btn {
+        background-color: #1DB954;
+        border-color: #1DB954;
+        opacity: 1;
+    }
+    
+    .music-list-item.playing .btn i {
+        content: '\f04c';
+    }
+    
+    /* Big Music Player - Enhanced */
+    .big-player-area {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        position: sticky;
+        top: 90px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .big-player-header {
+        text-align: center;
+        padding: 40px 30px 30px;
+    }
+    
+    .big-player-img {
+        width: 250px;
+        height: 250px;
+        border-radius: 20px;
+        object-fit: cover;
+        margin: 0 auto 30px;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        border: 5px solid rgba(255,255,255,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .big-player-img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    
+    .big-player-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .big-player-artist {
+        font-size: 1.2rem;
+        opacity: 0.8;
+        margin-bottom: 30px;
+    }
+    
+    .big-player-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+    
+    .big-player-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: none;
+        outline: none;
+        background: white;
+        color: #2a5298;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 15px;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s;
+    }
+    
+    .big-player-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    
+    .big-player-btn.play-pause {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+        background: linear-gradient(to right, #1DB954, #56D47E);
+        color: white;
+    }
+    
+    .big-player-progress {
+        padding: 0 40px;
+        margin-bottom: 40px;
+    }
+    
+    .big-progress-area {
+        height: 10px;
+        width: 100%;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.2);
+        cursor: pointer;
+        position: relative;
+        margin-bottom: 15px;
+    }
+    
+    .big-progress-bar {
+        height: 100%;
+        width: 0%;
+        position: relative;
+        border-radius: 10px;
+        background: linear-gradient(90deg, #1DB954, #56D47E);
+        transition: width 0.1s linear;
+    }
+    
+    .big-progress-bar::before {
+        content: "";
+        position: absolute;
+        height: 20px;
+        width: 20px;
+        border-radius: 50%;
+        top: 50%;
+        right: -10px;
+        transform: translateY(-50%);
+        background: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .big-progress-area:hover .big-progress-bar::before {
+        opacity: 1;
+    }
+    
+    .big-player-times {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1rem;
+        color: rgba(255,255,255,0.8);
+    }
+    
+    /* Playlist */
+    .playlist-wrapper {
+        background: rgba(255,255,255,0.05);
+        border-radius: 0 0 20px 20px;
+        max-height: 300px;
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+    
+    .playlist-wrapper::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .playlist-wrapper::-webkit-scrollbar-track {
+        background: rgba(255,255,255,0.05);
+    }
+    
+    .playlist-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.2);
+        border-radius: 4px;
+    }
+    
+    .playlist-wrapper::-webkit-scrollbar-thumb:hover {
+        background: rgba(255,255,255,0.3);
+    }
+    
+    /* Playlist Card Styles */
+    .playlist-container::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .playlist-container::-webkit-scrollbar-track {
+        background: #f0f0f0;
+        border-radius: 4px;
+    }
+    
+    .playlist-container::-webkit-scrollbar-thumb {
+        background: #0d6efd;
+        border-radius: 4px;
+    }
+    
+    .playlist-container::-webkit-scrollbar-thumb:hover {
+        background: #0b5ed7;
+    }
+    
+    .playlist-item {
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        transition: all 0.3s;
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .playlist-item:last-child {
+        border-bottom: none;
+    }
+    
+    .playlist-item:hover {
+        background: rgba(13, 110, 253, 0.05);
+    }
+    
+    .playlist-item.playing {
+        background: rgba(29, 185, 84, 0.1);
+        border-left: 4px solid #1DB954;
+    }
+    
+    .playlist-num {
+        width: 30px;
+        text-align: center;
+        margin-right: 15px;
+        color: #6c757d;
+        font-weight: 600;
+    }
+    
+    .playlist-item.playing .playlist-num {
+        color: #1DB954;
+    }
+    
+    .playlist-thumb {
+        width: 40px;
+        height: 40px;
+        border-radius: 5px;
+        margin-right: 15px;
+        object-fit: cover;
+        box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+    }
+    
+    .playlist-info {
+        flex: 1;
+    }
+    
+    .playlist-title {
+        font-weight: 600;
+        margin-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 180px;
+    }
+    
+    .playlist-artist {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    
+    .playlist-duration {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-left: 15px;
+    }
+    
+    .playlist-item.playing .playlist-title,
+    .playlist-item.playing .playlist-artist,
+    .playlist-item.playing .playlist-duration {
+        color: #1DB954;
+    }
+    
+    .playlist-play-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+        border: none;
+        outline: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        opacity: 0.7;
+        margin-left: 10px;
+    }
+    
+    .playlist-item:hover .playlist-play-btn {
+        opacity: 1;
+        background: rgba(13, 110, 253, 0.2);
+    }
+    
+    .playlist-item.playing .playlist-play-btn {
+        opacity: 1;
+        background: #1DB954;
+        color: white;
+    }
+    
+    /* Play button animation */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .play-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--primary-color, #0d6efd);
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        margin: 0 auto;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        cursor: pointer;
+        border: none;
+        z-index: 5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Banner -->
+<div class="page-banner mb-5">
+    <div class="container text-center">
+        <h1 class="text-white">Musiqalar</h1>
+        <p class="lead">O'zbekiston sanʼatkorlari ijro etilgan eng yaxshi musiqalar</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <!-- Search Area -->
+    {% if music %}
+        <div class="row">
+            <!-- Music List - Left Side -->
+            <div class="col-lg-6">
+                
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h5 class="mb-0"><i class="fas fa-list me-2"></i>Musiqa Ro'yxati</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="playlist-container" style="max-height: 400px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #0d6efd #f0f0f0;">
+                            {% if all_music %}
+                                {% for track in all_music %}
+                                    {% if track.file %}
+                                        <div class="playlist-item" 
+                                             data-track-id="{{ track.id }}"
+                                             data-track-title="{{ track.title }}"
+                                             data-track-artist="{{ track.artist.name }}"
+                                             data-track-audio="{{ track.file.url }}"
+                                             data-track-cover="{% if track.cover_image %}{{ track.cover_image.url }}{% else %}{% static 'images/music-default-bg.jpg' %}{% endif %}">
+                                            <div class="playlist-num">{{ forloop.counter }}</div>
+                                            {% if track.cover_image %}
+                                                <img src="{{ track.cover_image.url }}" class="playlist-thumb" alt="{{ track.title }}">
+                                            {% else %}
+                                                <img src="{% static 'images/music-default-bg.jpg' %}" class="playlist-thumb" alt="{{ track.title }}">
+                                            {% endif %}
+                                            <div class="playlist-info">
+                                                <div class="playlist-title">{{ track.title }}</div>
+                                                <div class="playlist-artist">{{ track.artist.name }}</div>
+                                            </div>
+                                            <div class="playlist-duration">-:--</div>
+                                            <button class="playlist-play-btn">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <div class="p-4 text-center">
+                                    <p>Hech qanday musiqa topilmadi.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Big Music Player and Playlist - Right Side -->
+            <div class="col-lg-6">
+                <div class="big-player-area">
+                    <div class="big-player-header">
+                        <img id="big-player-img" src="{% static 'images/music-default-bg.jpg' %}" class="big-player-img" alt="Music Cover">
+                        <h3 id="big-player-title" class="big-player-title text-white">Musiqa tanlang</h3>
+                        <p id="big-player-artist" class="big-player-artist">-</p>
+                        
+                        <div class="big-player-controls">
+                            <button id="big-player-prev" class="big-player-btn" title="Oldingi musiqa">
+                                <i class="fas fa-step-backward"></i>
+                            </button>
+                            <button id="big-player-play" class="big-player-btn play-pause" title="Tinglash/To'xtatish">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button id="big-player-next" class="big-player-btn" title="Keyingi musiqa">
+                                <i class="fas fa-step-forward"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="big-player-progress">
+                            <div id="big-progress-area" class="big-progress-area">
+                                <div id="big-progress-bar" class="big-progress-bar"></div>
+                            </div>
+                            <div class="big-player-times">
+                                <span id="big-current-time">0:00</span>
+                                <span id="big-duration">0:00</span>
+                            </div>
+                        </div>
+                        
+                        <audio id="big-audio" src=""></audio>
+                    </div>
+                </div>
+                
+                <!-- Playlist Card -->
+                
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center py-5">
+            <i class="fas fa-info-circle fa-3x mb-3"></i>
+            <h4>Ma'lumotlar mavjud emas.</h4>
+            <p>Hech qanday musiqa mavjud emas.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/custom-music-player.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Variables for the big player
+    const bigAudio = document.getElementById('big-audio');
+    const bigPlayerImg = document.getElementById('big-player-img');
+    const bigPlayerTitle = document.getElementById('big-player-title');
+    const bigPlayerArtist = document.getElementById('big-player-artist');
+    const bigPlayerPlay = document.getElementById('big-player-play');
+    const bigPlayerPrev = document.getElementById('big-player-prev');
+    const bigPlayerNext = document.getElementById('big-player-next');
+    const bigProgressArea = document.getElementById('big-progress-area');
+    const bigProgressBar = document.getElementById('big-progress-bar');
+    const bigCurrentTime = document.getElementById('big-current-time');
+    const bigDuration = document.getElementById('big-duration');
+    
+    let currentTrackIndex = -1;
+    const playlistItems = document.querySelectorAll('.playlist-item');
+    const playTrackButtons = document.querySelectorAll('.play-track-btn');
+    
+    // Format time to mm:ss
+    function formatTime(time) {
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+    
+    // Function to load track
+    function loadTrack(index) {
+        if (index < 0 || index >= playlistItems.length) return;
+        
+        currentTrackIndex = index;
+        const track = playlistItems[index];
+        
+        // Remove playing class from all playlist items
+        playlistItems.forEach(item => item.classList.remove('playing'));
+        
+        // Add playing class to current track
+        track.classList.add('playing');
+        
+        // Scroll to current track in playlist
+        // track.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Update big player UI
+        bigPlayerImg.src = track.dataset.trackCover;
+        bigPlayerTitle.textContent = track.dataset.trackTitle;
+        bigPlayerArtist.textContent = track.dataset.trackArtist;
+        bigAudio.src = track.dataset.trackAudio;
+        
+        // Reset progress
+        bigProgressBar.style.width = '0%';
+        bigCurrentTime.textContent = '0:00';
+        
+        // Change play icon to loading
+        bigPlayerPlay.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        
+        // Load audio
+        bigAudio.load();
+    }
+    
+    // Function to play track
+    function playTrack() {
+        const playPromise = bigAudio.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                bigPlayerPlay.innerHTML = '<i class="fas fa-pause"></i>';
+                
+                // Update play buttons in playlist
+                playlistItems.forEach((item, i) => {
+                    const btn = item.querySelector('.playlist-play-btn');
+                    if (btn) {
+                        btn.innerHTML = i === currentTrackIndex ? 
+                            '<i class="fas fa-pause"></i>' : 
+                            '<i class="fas fa-play"></i>';
+                    }
+                });
+            }).catch(error => {
+                console.error("Playback error:", error);
+                bigPlayerPlay.innerHTML = '<i class="fas fa-play"></i>';
+            });
+        }
+    }
+    
+    // Function to pause track
+    function pauseTrack() {
+        bigAudio.pause();
+        bigPlayerPlay.innerHTML = '<i class="fas fa-play"></i>';
+        
+        // Update play button in playlist
+        if (currentTrackIndex >= 0) {
+            const currentBtn = playlistItems[currentTrackIndex].querySelector('.playlist-play-btn');
+            if (currentBtn) {
+                currentBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        }
+    }
+    
+    // Function to play next track
+    function playNextTrack() {
+        let nextIndex = currentTrackIndex + 1;
+        if (nextIndex >= playlistItems.length) nextIndex = 0;
+        loadTrack(nextIndex);
+        playTrack();
+    }
+    
+    // Function to play previous track
+    function playPrevTrack() {
+        let prevIndex = currentTrackIndex - 1;
+        if (prevIndex < 0) prevIndex = playlistItems.length - 1;
+        loadTrack(prevIndex);
+        playTrack();
+    }
+    
+    // Play/Pause button event
+    bigPlayerPlay.addEventListener('click', function() {
+        if (currentTrackIndex < 0 && playlistItems.length > 0) {
+            // If no track is selected, play the first one
+            loadTrack(0);
+            playTrack();
+        } else if (bigAudio.paused) {
+            playTrack();
+        } else {
+            pauseTrack();
+        }
+    });
+    
+    // Previous button event
+    bigPlayerPrev.addEventListener('click', playPrevTrack);
+    
+    // Next button event
+    bigPlayerNext.addEventListener('click', playNextTrack);
+    
+    // Update progress bar while playing
+    bigAudio.addEventListener('timeupdate', function() {
+        const progressPercent = (bigAudio.currentTime / bigAudio.duration) * 100;
+        bigProgressBar.style.width = `${progressPercent}%`;
+        bigCurrentTime.textContent = formatTime(bigAudio.currentTime);
+        
+        // If track ended, play next
+        if (bigAudio.ended) {
+            playNextTrack();
+        }
+    });
+    
+    // Set duration when metadata is loaded
+    bigAudio.addEventListener('loadedmetadata', function() {
+        bigDuration.textContent = formatTime(bigAudio.duration);
+        
+        // Update duration in playlist item
+        if (currentTrackIndex >= 0) {
+            const durationEl = playlistItems[currentTrackIndex].querySelector('.playlist-duration');
+            if (durationEl) {
+                durationEl.textContent = formatTime(bigAudio.duration);
+            }
+        }
+        
+        // Auto play when loaded
+        playTrack();
+    });
+    
+    // Click on progress bar to seek
+    bigProgressArea.addEventListener('click', function(e) {
+        const progressWidth = bigProgressArea.clientWidth;
+        const clickedOffsetX = e.offsetX;
+        const songDuration = bigAudio.duration;
+        
+        bigAudio.currentTime = (clickedOffsetX / progressWidth) * songDuration;
+        
+        if (bigAudio.paused) {
+            playTrack();
+        }
+    });
+    
+    // Playlist item click event
+    playlistItems.forEach((item, index) => {
+        item.addEventListener('click', function(e) {
+            // Don't trigger if clicking play button (it has its own handler)
+            if (e.target.closest('.playlist-play-btn')) return;
+            
+            if (currentTrackIndex === index && !bigAudio.paused) {
+                // If clicking current playing track, pause it
+                pauseTrack();
+            } else {
+                // Load and play the selected track
+                loadTrack(index);
+                playTrack();
+            }
+        });
+        
+        // Play button in playlist
+        const playBtn = item.querySelector('.playlist-play-btn');
+        if (playBtn) {
+            playBtn.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent bubbling to the item click handler
+                
+                if (currentTrackIndex === index && !bigAudio.paused) {
+                    // If clicking current playing track, pause it
+                    pauseTrack();
+                } else {
+                    // Load and play the selected track
+                    loadTrack(index);
+                    playTrack();
+                }
+            });
+        }
+    });
+    
+    // Preload durations for visible tracks
+    const preloadDurations = () => {
+        playlistItems.forEach((item, index) => {
+            if (index < 10) { // Only preload first 10 tracks to avoid too many requests
+                const tempAudio = new Audio();
+                tempAudio.src = item.dataset.trackAudio;
+                tempAudio.addEventListener('loadedmetadata', function() {
+                    const durationEl = item.querySelector('.playlist-duration');
+                    if (durationEl) {
+                        durationEl.textContent = formatTime(tempAudio.duration);
+                    }
+                    tempAudio.remove(); // Clean up
+                });
+                tempAudio.load();
+            }
+        });
+    };
+    
+    // Call preload function with a slight delay to not block page loading
+    setTimeout(preloadDurations, 1000);
+    
+    // Play track button events (from music cards)
+    playTrackButtons.forEach(btn => {
+        if (btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const trackId = btn.dataset.trackId;
+                
+                // Find track index in playlist
+                let trackIndex = -1;
+                playlistItems.forEach((item, index) => {
+                    if (item.dataset.trackId === trackId) {
+                        trackIndex = index;
+                    }
+                });
+                
+                if (trackIndex >= 0) {
+                    loadTrack(trackIndex);
+                    playTrack();
+                    
+                    // Scroll to player if on mobile
+                    if (window.innerWidth < 992) {
+                        document.querySelector('.big-player-area').scrollIntoView({behavior: 'smooth'});
+                    }
+                }
+            });
+        }
+    });
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        const activeElement = document.activeElement;
+        const isInputActive = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA';
+        
+        if (!isInputActive) {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (bigAudio.paused) {
+                    playTrack();
+                } else {
+                    pauseTrack();
+                }
+            } else if (e.code === 'ArrowRight') {
+                playNextTrack();
+            } else if (e.code === 'ArrowLeft') {
+                playPrevTrack();
+            }
+        }
+    });
+    
+    // If there are tracks in the playlist, load the first one (but don't play)
+    if (playlistItems.length > 0) {
+        loadTrack(0);
+    }
+});
+</script>
+{% endblock %} 
