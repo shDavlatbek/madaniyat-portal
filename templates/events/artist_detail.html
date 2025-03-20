@@ -743,7 +743,7 @@
                 <div class="like-container">
                     <form action="{% url 'toggle_like' %}" method="post" class="d-inline">
                         {% csrf_token %}
-                        <input type="hidden" name="artist_id" value="{{ artist.slug }}">
+                        <input type="hidden" name="artist_id" value="{{ artist.id }}">
                         <button type="button" class="like-btn">
                             <i class="{% if is_liked %}fas{% else %}far{% endif %} fa-heart"></i>
                             <span class="like-count">{{ artist.likes.count }} Likelar</span>
@@ -943,7 +943,7 @@
             {% if artist.events.exists %}
                 <div class="card mb-4 shadow-sm">
                     <div class="card-header bg-primary text-white py-3">
-                        <h5 class="mb-0"><i class="far fa-calendar-alt me-2"></i>Tadbirlar</h5>
+                        <h5 class="mb-0 text-white"><i class="far fa-calendar-alt me-2"></i>Tadbirlar</h5>
                     </div>
                     <div class="card-body p-4">
                         {% for event in artist.events.all|dictsortreversed:"date"|slice:":5" %}
@@ -980,7 +980,7 @@
             {% if artist.facebook_url or artist.instagram_url or artist.youtube_url or artist.x_url %}
             <div class="card event-info-card">
                 <div class="card-header bg-secondary text-white py-3">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2"></i>Ijtimoiy tarmoqlar</h5>
+                    <h5 class="mb-0 fw-bold text-white"><i class="fas fa-users me-2"></i>Ijtimoiy tarmoqlar</h5>
                 </div>
                 <div class="card-body p-4">
                     <p class="text-muted mb-3">Sanatkor ijtimoiy tarmoqlariga ulaning</p>

@@ -33,15 +33,36 @@ class CompositionAdmin(admin.ModelAdmin):
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title', 'date', 'location', 'is_featured', 'artists_count')
+    list_display = ('title', 'date', 'location', 'is_featured', 'has_ticket_price', 'artists_count')
     list_filter = ('date', 'is_featured')
     search_fields = ('title', 'description', 'location')
     filter_horizontal = ('artists',)
     list_editable = ('is_featured',)
+    fieldsets = (
+        ('Asosiy ma\'lumotlar', {
+            'fields': ('title', 'slug', 'description', 'date', 'location', 'type', 'is_featured', 'image')
+        }),
+        ('Xarita ma\'lumotlari', {
+            'fields': ('latitude', 'longitude'),
+            'classes': ('collapse',),
+        }),
+        ('Bilet ma\'lumotlari', {
+            'fields': ('ticket_price', 'ticket_url'),
+        }),
+        ('Ishtirokchilar', {
+            'fields': ('artists',),
+        }),
+    )
     
     def artists_count(self, obj):
         return obj.artists.count()
     artists_count.short_description = "Artists"
+    
+    def has_ticket_price(self, obj):
+        if obj.ticket_price and obj.ticket_price > 0:
+            return f"✓ {obj.ticket_price} so'm"
+        return "✗ Tekin"
+    has_ticket_price.short_description = "Bilet narxi"
 
 
 @admin.register(Like)

@@ -94,6 +94,8 @@ class Event(models.Model):
     is_featured = models.BooleanField(default=False)
     latitude = models.FloatField(blank=True, null=True, verbose_name="Xaritada kenglik")
     longitude = models.FloatField(blank=True, null=True, verbose_name="Xaritada uzunlik")
+    ticket_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name="Bilet narxi")
+    ticket_url = models.URLField(blank=True, null=True, verbose_name="Bilet sotib olish havolasi")
     
     def save(self, *args, **kwargs):
         if not self.slug:
